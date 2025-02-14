@@ -11,7 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.foodlens.screens.GetStarted
+import com.example.foodlens.screens.Home
 import com.example.foodlens.screens.LoginPage
 import com.example.foodlens.screens.Register
 import com.example.foodlens.ui.theme.FoodLensTheme
@@ -22,9 +25,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FoodLensTheme {
-                  // Register()
-                  //GetStarted()
-               //LoginPage()
+                val controller: NavController = rememberNavController()
+
+                Navigation(
+                    navController = controller
+                )
             }
         }
     }

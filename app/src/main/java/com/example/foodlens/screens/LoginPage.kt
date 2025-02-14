@@ -49,11 +49,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.foodlens.R
 
-@Preview(showSystemUi = true)
+
 @Composable
-fun LoginPage() {
+fun LoginPage(navHostController: NavHostController) {
     var mobileNo by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -112,7 +113,8 @@ fun LoginPage() {
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(Color.Transparent),
             onClick = {
-                //TODO
+                //TODO CHECK CREDENTIALS FROM DATABASE AND IF CORRECT
+                navHostController.navigate("home")
             }) {
             Text(
                 text = "Login",
@@ -140,7 +142,10 @@ fun LoginPage() {
 
             TextButton(
                 contentPadding = PaddingValues(0.dp),
-                onClick = {}
+                onClick = {
+                    //REGISTER into DATABASE
+                    navHostController.navigate("register")
+                }
             ) {
                 Text(
                     text="Register",

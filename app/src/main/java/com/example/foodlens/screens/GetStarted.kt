@@ -29,11 +29,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.foodlens.R
 
-@Preview(showSystemUi = true)
 @Composable
-fun GetStarted() {
+fun GetStarted(navHostController: NavHostController) {
 
         Box(modifier = Modifier.fillMaxSize()){
 
@@ -57,16 +57,7 @@ fun GetStarted() {
                     contentDescription = null,
                     modifier = Modifier.scale(1.8f)
                 )
-//                Image(
-//                    painter = painterResource(R.drawable.restaurantfooddelivery),
-//                    contentDescription = null,
-//                    modifier = Modifier.scale(1.3f)
-//                )
-//                Image(
-//                    painter = painterResource(R.drawable.skillfullycraftedflatillustration),
-//                    contentDescription = null,
-//                    modifier = Modifier.scale(1.8f)
-//                )
+
 
                 Spacer(modifier = Modifier.height(50.dp))
                 Text(
@@ -94,7 +85,7 @@ fun GetStarted() {
                     shape = CircleShape,
                     colors = ButtonDefaults.buttonColors(Color.Transparent),
                     onClick = {
-                        //TODO
+                            navHostController.navigate("register")
                     }) {
                     Text(
                         text = "Get Started",color= Color.White,
