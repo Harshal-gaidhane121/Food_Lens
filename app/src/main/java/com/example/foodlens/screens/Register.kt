@@ -1,6 +1,7 @@
 package com.example.foodlens.screens
 
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -54,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.foodlens.R
+import com.example.foodlens.User
 
 @Composable
 fun Register(navHostController: NavHostController) {
@@ -63,6 +66,7 @@ fun Register(navHostController: NavHostController) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
 
+    val registration = remember { mutableStateListOf<User>() }
 
     Image(
         painter = painterResource(R.drawable.background2),
@@ -88,14 +92,14 @@ fun Register(navHostController: NavHostController) {
 
         TransparentTextField(
             value = name,
-            onValueChange = { password = it },
+            onValueChange = { name = it },
             placeholder = "Name",
             icon = Icons.Default.Person
         )
 
         TransparentTextField(
             value = email,
-            onValueChange = { password = it },
+            onValueChange = { email = it },
             placeholder = "Email",
             icon = Icons.Default.Email
         )
@@ -127,8 +131,25 @@ fun Register(navHostController: NavHostController) {
             colors = ButtonDefaults.buttonColors(Color.Transparent),
             onClick = {
                 //TODO Registration in database
+                if(mobileNo.length<10){
+                    //INVALID mobile no
 
-                navHostController.navigate("loginPage")
+                }else if(mobileNo ==null || email==null || password==null|| name==null){
+                    //INCOMPLETE CREDENTIALS
+
+                }
+                else if (registration.any { it.mobile == mobileNo }) {
+                    //"Mobile number already exists!"
+                } else {
+                    registration.add(User(name, email, mobileNo, password))
+                    // Clear input fields after adding
+                    name = ""
+                    email = ""
+                    mobileNo = ""
+                    password = ""
+                    navHostController.navigate("loginPage")
+                }
+
             }) {
             Text(
                 text = "Register",

@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 
-@Preview(showSystemUi = true)
 @Composable
 fun FloatingBottomNavigation(navHostController: NavHostController) {
     var selectedItem by remember { mutableStateOf(0) }
@@ -32,12 +31,12 @@ fun FloatingBottomNavigation(navHostController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(40.dp), contentAlignment = Alignment.BottomCenter
+            .padding(20.dp), contentAlignment = Alignment.BottomCenter
     ) {
 
         Card(
 
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = colorResource(R.color.lightGreen)),
             elevation = CardDefaults.cardElevation(10.dp),
             shape = RoundedCornerShape(40.dp),
             modifier = Modifier
@@ -59,7 +58,7 @@ fun FloatingBottomNavigation(navHostController: NavHostController) {
                         }, modifier = Modifier
                             .clip(RoundedCornerShape(30.dp))
                             .background(
-                                if (selectedItem == index) Color(94, 236, 100, 134) else Color(
+                                if (selectedItem == index) Color(255, 255, 255, 213) else Color(
                                     255, 255, 255, 0
                                 )
                             )

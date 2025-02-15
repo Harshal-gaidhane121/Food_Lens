@@ -1,5 +1,6 @@
 package com.example.foodlens.screens
 
+import android.provider.CalendarContract.Colors
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloatAsState
@@ -8,12 +9,22 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,16 +49,36 @@ import com.example.foodlens.FloatingBottomNavigation
 import com.example.foodlens.R
 import com.example.foodlens.ui.theme.TopBar
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
+import java.util.Locale.Category
 
 
 @Composable
 fun Home(navHostController: NavHostController) {
-    val cardItems = listOf("Card 1", "Card 2", "Card 3", "Card 4", "Card 5", "Card 6")
+
+    val category = listOf(
+        Pair(R.drawable.beverages, "Beverages"),
+        Pair(R.drawable.biscuits, "Biscuits"),
+        Pair(R.drawable.breads, "Breads"),
+        Pair(R.drawable.cereals, "Cereals"),
+        Pair(R.drawable.chocolates, "Chocolates"),
+        Pair(R.drawable.dairyproduct, "Dairy Product"),
+        Pair(R.drawable.drinks, "Drinks"),
+        Pair(R.drawable.icecream, "Ice Creams"),
+        Pair(R.drawable.noodles, "Noodles"),
+        Pair(R.drawable.nutbars, "Cereals"),
+        Pair(R.drawable.chocolates, "Nut bars"),
+        Pair(R.drawable.oilandghee, "Oil And Ghee"),
+        Pair(R.drawable.snacks, "Snacks"),
+        Pair(R.drawable.spices, "Spices"),
+        Pair(R.drawable.toast, "Toast"),
+
+    )
+
 
     Box(modifier = Modifier.fillMaxSize().padding(top = 40.dp)){
 
         Image(
-            painter = painterResource(R.drawable.background2),
+            painter = painterResource(R.drawable.bg1),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
@@ -55,10 +86,17 @@ fun Home(navHostController: NavHostController) {
 
 //        TopBar()
 
+//        Card(modifier = Modifier.fillMaxSize(),
+//            colors = CardDefaults.cardColors(colorResource(R.color.lightGreen))){
+//
+//        }
+
+
         LazyColumn(horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()){
+            modifier = Modifier.fillMaxSize().padding(5.dp)){
 
             item{
+
 
                 Text(text="HEALTH TIPS AND ARTICLES",
                     modifier = Modifier.padding(20.dp),
@@ -79,9 +117,27 @@ fun Home(navHostController: NavHostController) {
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
                 )
 
+
+
             }
+            items(category.chunked(3)) { rowItems ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    rowItems.forEach { (imageRes, title) ->
+                        CategoryItem(cat = title, drawable = imageRes)
+                    }
+                    // If the last row has only one item, add an empty spacer
+                    if (rowItems.size == 1) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
 
-
+            }
+            item{
+                Spacer(modifier = Modifier.height(90.dp))
+            }
 
         }
 
@@ -160,3 +216,27 @@ fun Home(navHostController: NavHostController) {
 //        }
 //    }
 //}
+
+@Composable
+fun CategoryItem(cat: String,drawable: Int){
+    Column (verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally){
+        Card (
+            modifier = Modifier.size(130.dp).padding(start = 15.dp, end = 10.dp,top=20.dp),
+            elevation = CardDefaults.cardElevation(10.dp),
+            shape = RoundedCornerShape(10.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
+        ){
+            Column(verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(painter = painterResource(id=drawable), contentDescription = cat,
+                    contentScale = ContentScale.Crop)
+            }
+        }
+        Text(text=cat)
+    }
+
+
+
+}
