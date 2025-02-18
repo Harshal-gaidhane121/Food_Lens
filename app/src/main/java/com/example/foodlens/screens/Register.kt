@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -54,19 +55,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.foodlens.R
 import com.example.foodlens.User
+import com.example.foodlens.UserViewModel
+import com.example.foodlens.UserViewModelFactory
 
 @Composable
-fun Register(navHostController: NavHostController) {
-
+fun Register(navHostController: NavHostController, userViewModel: UserViewModel = viewModel()) {
     var mobileNo by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
-    val registration = remember { mutableStateListOf<User>() }
+
+    // This will handle the result of registration attempt
+    val registrationStatus = remember { mutableStateOf(false) }
 
     Image(
         painter = painterResource(R.drawable.background2),
@@ -79,7 +86,6 @@ fun Register(navHostController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(20.dp)
     ) {
-
         Spacer(modifier = Modifier.height(120.dp))
 
         Text(
@@ -110,7 +116,6 @@ fun Register(navHostController: NavHostController) {
             placeholder = "Mobile No.",
             isNumberKeyboard = true,
             icon = Icons.Default.Phone
-
         )
 
         TransparentTextField(
@@ -122,6 +127,7 @@ fun Register(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(80.dp))
 
+        // Register button
         Button(
             modifier = Modifier
                 .height(60.dp)
@@ -130,27 +136,43 @@ fun Register(navHostController: NavHostController) {
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(Color.Transparent),
             onClick = {
-                //TODO Registration in database
-                if(mobileNo.length<10){
-                    //INVALID mobile no
-
-                }else if(mobileNo ==null || email==null || password==null|| name==null){
-                    //INCOMPLETE CREDENTIALS
-
+                if (mobileNo.isEmpty() || email.isEmpty() || password.isEmpty() || name.isEmpty()) {
+                    Toast.makeText(context, "Incomplete credentials", Toast.LENGTH_SHORT).show()
                 }
-                else if (registration.any { it.mobile == mobileNo }) {
-                    //"Mobile number already exists!"
-                } else {
-                    registration.add(User(name, email, mobileNo, password))
-                    // Clear input fields after adding
-                    name = ""
-                    email = ""
-                    mobileNo = ""
-                    password = ""
-                    navHostController.navigate("loginPage")
-                }
+                else if (mobileNo.length < 10) {
+                    Toast.makeText(context, "Invalid mobile number", Toast.LENGTH_SHORT).show()
+                }else {
+                    // Check if mobile number already exists
+                    userViewModel.isMobileRegistered(mobileNo) { exists ->
+                        if (exists) {
+                            Toast.makeText(context, "Mobile number already exists!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            // Register user in database
+                            val user = User(
+                                name = name,
+                                email = email,
+                                mobile = mobileNo,
+                                password = password
+                            )
+                            userViewModel.registerUser(user) {
+                                registrationStatus.value = it
+                                if (it) {
+                                    navHostController.navigate("loginPage"){
+                                        popUpTo("loginPage"){
+                                            inclusive=true
+                                        }
+                                    }
+                                } else {
+                                    errorMessage = "Registration failed"
+                                }
+                            }
+                            Toast.makeText(context, "Registered", Toast.LENGTH_SHORT).show()
 
-            }) {
+                        }
+                    }
+                }
+            }
+        ) {
             Text(
                 text = "Register",
                 fontSize = 19.sp,
@@ -158,6 +180,11 @@ fun Register(navHostController: NavHostController) {
             )
         }
 
+        // Error message display
+        if (errorMessage.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(text = errorMessage, color = Color.Red)
+        }
 
         Spacer(modifier = Modifier.height(13.dp))
 
@@ -165,23 +192,23 @@ fun Register(navHostController: NavHostController) {
             horizontalArrangement = Arrangement.spacedBy(0.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            Text(text="Already have and account", color = Color(1, 1, 1, 122))
+            Text(text = "Already have an account?", color = Color(1, 1, 1, 122))
 
             TextButton(
-                onClick = {
-                    navHostController.navigate("loginPage")
-                },
+                onClick = { navHostController.navigate("loginPage"){
+                    popUpTo("register"){
+                        inclusive=true
+                    }
+                } },
                 contentPadding = PaddingValues(0.dp),
                 modifier = Modifier.padding(0.dp)
             ) {
                 Text(
-                    text="Login",
+                    text = "Login",
                     color = colorResource(R.color.green),
                 )
             }
         }
-
     }
 }
 

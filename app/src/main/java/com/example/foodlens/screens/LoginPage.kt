@@ -1,5 +1,7 @@
 package com.example.foodlens.screens
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -49,14 +52,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.foodlens.R
+import com.example.foodlens.UserViewModel
 
 
 @Composable
-fun LoginPage(navHostController: NavHostController) {
+fun LoginPage(navHostController: NavHostController ,userViewModel: UserViewModel = viewModel()) {
     var mobileNo by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
 
     Image(
         painter = painterResource(R.drawable.background2),
@@ -113,8 +120,22 @@ fun LoginPage(navHostController: NavHostController) {
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(Color.Transparent),
             onClick = {
+                if(mobileNo.isEmpty() || password.isEmpty() ){
+                    Toast.makeText(context, "Incomplete credentials", Toast.LENGTH_SHORT).show()
+                }
+                userViewModel.loginUser(mobileNo, password) { isValid ->
+                    if (isValid) {
+                        sharedPreferences.edit().putBoolean("isLoggedIn", true).apply()
+                        navHostController.navigate("home") {
+                            popUpTo(0) // Removes login from back stack
+                            launchSingleTop = true
+                        }
+
+                    } else {
+                        Toast.makeText(context, "Invalid credentials", Toast.LENGTH_SHORT).show()
+                    }
+                }
                 //TODO CHECK CREDENTIALS FROM DATABASE AND IF CORRECT
-                navHostController.navigate("home")
             }) {
             Text(
                 text = "Login",
@@ -144,7 +165,11 @@ fun LoginPage(navHostController: NavHostController) {
                 contentPadding = PaddingValues(0.dp),
                 onClick = {
                     //REGISTER into DATABASE
-                    navHostController.navigate("register")
+                    navHostController.navigate("register"){
+                        popUpTo("loginPage"){
+                            inclusive=true
+                        }
+                    }
                 }
             ) {
                 Text(
@@ -163,8 +188,10 @@ fun TransparentTextField(
     onValueChange: (String) -> Unit,
     placeholder: String,
     isNumberKeyboard: Boolean = false,
+    isPassword: Boolean = false,
     icon: ImageVector
 ) {
+    var passwordVisible by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -181,6 +208,7 @@ fun TransparentTextField(
             ), keyboardOptions = KeyboardOptions(
                 keyboardType = if (isNumberKeyboard) KeyboardType.Number else KeyboardType.Text
             ),
+
             decorationBox = { innerTextField ->
                 Column {
                     Row(
