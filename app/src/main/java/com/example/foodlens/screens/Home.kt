@@ -1,6 +1,10 @@
 package com.example.foodlens.screens
 
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.Context
 import android.provider.CalendarContract.Colors
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloatAsState
@@ -31,6 +35,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -44,6 +50,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +58,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -69,6 +77,10 @@ import java.util.Locale.Category
 
 @Composable
 fun Home(navHostController: NavHostController) {
+
+
+    val context = LocalContext.current
+
 
 
     val category = listOf(
@@ -100,6 +112,7 @@ fun Home(navHostController: NavHostController) {
             .fillMaxSize()
             .padding(top = 40.dp)
     ) {
+
 
         Image(
             painter = painterResource(R.drawable.plainbackground),
@@ -177,13 +190,59 @@ fun Home(navHostController: NavHostController) {
 
         }
 
-
         FloatingBottomNavigation(navHostController)
 
+        ExitDialogBox(context)
 
     }
 
 
+}
+
+
+@Composable
+fun ExitDialogBox(context: Context) {
+
+    val activity = rememberUpdatedState(newValue = context as? Activity)
+
+    var showExitDialog by remember { mutableStateOf(false) }
+
+    BackHandler {
+        showExitDialog = true
+    }
+
+
+    if (showExitDialog) {
+        AlertDialog(
+            containerColor =Color.White,
+            onDismissRequest = { showExitDialog = false },
+            title = { Text("Exit App", color = Color(1,1,1)) },
+            text = { Text("Are you sure you want to exit?", color = Color(1,1,1)) },
+            confirmButton = {
+
+                Button(
+                    colors = ButtonDefaults.buttonColors(colorResource(R.color.lightGreen)),
+                    onClick = {
+                    showExitDialog = false
+
+                    (context as? Activity)?.finish()
+
+//                    activity.value?.finish()    Exit app
+                }) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+
+                Button(
+                    colors = ButtonDefaults.buttonColors(colorResource(R.color.lightGreen)),
+                    onClick = { showExitDialog = false }) {
+                    Text("No")
+                }
+            }
+        )
+    }
+    
 }
 
 
@@ -261,9 +320,8 @@ fun Carousel() {
 
 }
 
-@Preview(
-    showSystemUi = true
-)
+
+
 @Composable
 fun Profile() {
 

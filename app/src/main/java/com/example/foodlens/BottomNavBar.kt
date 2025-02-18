@@ -20,28 +20,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun FloatingBottomNavigation(navHostController: NavHostController) {
-    var selectedItem by remember { mutableStateOf(0) }
-
     val items = listOf("home", "search", "profile")
     val icons = listOf(Icons.Default.Home, Icons.Default.Search, Icons.Default.Person)
+
+    // Track current destination
+    val currentDestination by navHostController.currentBackStackEntryAsState()
+    val selectedItem = items.indexOf(currentDestination?.destination?.route)
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp), contentAlignment = Alignment.BottomCenter
+            .padding(20.dp),
+        contentAlignment = Alignment.BottomCenter
     ) {
-
         Card(
-
             colors = CardDefaults.cardColors(containerColor = colorResource(R.color.lightGreen)),
             elevation = CardDefaults.cardElevation(10.dp),
             shape = RoundedCornerShape(40.dp),
             modifier = Modifier
                 .height(70.dp)
-                .fillMaxWidth(.8f),
+                .fillMaxWidth(0.8f),
         ) {
             Row(
                 modifier = Modifier
@@ -53,14 +55,20 @@ fun FloatingBottomNavigation(navHostController: NavHostController) {
                 items.forEachIndexed { index, route ->
                     IconButton(
                         onClick = {
-//                        selectedItem = index
-//                        navController.navigate(route)
-                        }, modifier = Modifier
+                            if (route != currentDestination?.destination?.route) {
+                                navHostController.navigate(route) {
+                                    popUpTo(navHostController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
+                        },
+                        modifier = Modifier
                             .clip(RoundedCornerShape(30.dp))
                             .background(
-                                if (selectedItem == index) Color(255, 255, 255, 213) else Color(
-                                    255, 255, 255, 0
-                                )
+                                if (selectedItem == index) Color(255, 255, 255, 213) else Color.Transparent
                             )
                     ) {
                         Icon(
@@ -73,7 +81,5 @@ fun FloatingBottomNavigation(navHostController: NavHostController) {
                 }
             }
         }
-
     }
 }
-

@@ -64,6 +64,8 @@ fun LoginPage(navHostController: NavHostController ,userViewModel: UserViewModel
     var password by remember { mutableStateOf("") }
     val context = LocalContext.current
     val sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+    val sharedPref = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+    sharedPref.edit().clear().apply()  // Clears all data
 
     Image(
         painter = painterResource(R.drawable.background2),
@@ -76,6 +78,7 @@ fun LoginPage(navHostController: NavHostController ,userViewModel: UserViewModel
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(20.dp)
     ) {
+        ExitDialogBox(context)
 
         Spacer(modifier = Modifier.height(160.dp))
 
@@ -125,6 +128,8 @@ fun LoginPage(navHostController: NavHostController ,userViewModel: UserViewModel
                 }
                 userViewModel.loginUser(mobileNo, password) { isValid ->
                     if (isValid) {
+
+                        saveCurrentUser(context,mobileNo)
                         sharedPreferences.edit().putBoolean("isLoggedIn", true).apply()
                         navHostController.navigate("home") {
                             popUpTo(0) // Removes login from back stack
@@ -246,3 +251,9 @@ fun TransparentTextField(
         )
     }
 }
+
+fun saveCurrentUser(context: Context, mobileNo: String) {
+    val sharedPref = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+    sharedPref.edit().putString("LOGGED_IN_USER", mobileNo).apply()
+}
+

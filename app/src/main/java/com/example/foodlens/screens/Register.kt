@@ -86,6 +86,9 @@ fun Register(navHostController: NavHostController, userViewModel: UserViewModel 
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(20.dp)
     ) {
+
+        ExitDialogBox(context)
+
         Spacer(modifier = Modifier.height(120.dp))
 
         Text(

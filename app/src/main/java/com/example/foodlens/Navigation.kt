@@ -11,7 +11,7 @@ import androidx.navigation.compose.composable
 import com.example.foodlens.screens.GetStarted
 import com.example.foodlens.screens.Home
 import com.example.foodlens.screens.LoginPage
-import com.example.foodlens.screens.ProfileScreen
+import com.example.foodlens.screens.ProfilePage
 import com.example.foodlens.screens.Register
 import com.example.foodlens.screens.SearchScreen
 @Composable
@@ -23,7 +23,7 @@ fun Navigation(navController: NavController,context: Context) {
     val userViewModel: UserViewModel = viewModel(
         factory = UserViewModelFactory(context) // Pass the factory
     )
-    val startDestination = if (isLoggedIn) "home" else "loginPage"
+    val startDestination = if (isLoggedIn) "home" else "getStarted"
 
     NavHost(
         navController = navController as? NavHostController ?: return,
@@ -34,7 +34,7 @@ fun Navigation(navController: NavController,context: Context) {
         composable("register") { Register(navController, userViewModel) }
         composable("home") { Home(navController) }
         composable("search") { SearchScreen(navController) }
-        composable("profile") { ProfileScreen(navController) }
+        composable("profile") { ProfilePage(navController) }
     }
 }
 
