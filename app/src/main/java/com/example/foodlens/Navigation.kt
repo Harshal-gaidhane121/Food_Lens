@@ -8,8 +8,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.foodlens.screens.AnalysisPage
+import com.example.foodlens.screens.CategoriesPage
 import com.example.foodlens.screens.GetStarted
 import com.example.foodlens.screens.Home
+import com.example.foodlens.screens.LoadingScreen
 import com.example.foodlens.screens.LoginPage
 import com.example.foodlens.screens.ProfilePage
 import com.example.foodlens.screens.Register
@@ -32,9 +35,13 @@ fun Navigation(navController: NavController,context: Context) {
         composable("getStarted") { GetStarted(navController) }
         composable("loginPage") { LoginPage(navController, userViewModel) }
         composable("register") { Register(navController, userViewModel) }
-        composable("home") { Home(navController) }
+        composable("home") { Home(navController,userViewModel) }
         composable("search") { SearchScreen(navController) }
         composable("profile") { ProfilePage(navController) }
+        composable("categoriesPage"){ CategoriesPage(navController, userViewModel) }
+        composable("analysisPage"){ AnalysisPage(navController) }
+        composable("loadingPage") { LoadingScreen(navController) }
+
     }
 }
 

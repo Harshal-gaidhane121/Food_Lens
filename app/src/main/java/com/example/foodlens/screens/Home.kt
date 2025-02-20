@@ -12,6 +12,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -66,9 +68,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.foodlens.FloatingBottomNavigation
 import com.example.foodlens.R
+import com.example.foodlens.UserViewModel
 import com.example.foodlens.ui.theme.TopBar
 import kotlinx.coroutines.delay
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
@@ -76,7 +81,7 @@ import java.util.Locale.Category
 
 
 @Composable
-fun Home(navHostController: NavHostController) {
+fun Home(navHostController: NavHostController,viewModel: UserViewModel) {
 
 
     val context = LocalContext.current
@@ -175,7 +180,8 @@ fun Home(navHostController: NavHostController) {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     rowItems.forEach { (imageRes, title) ->
-                        CategoryItem(cat = title, drawable = imageRes)
+
+                        HomeCategoryItem(viewModel,navHostController,cat = title, drawable = imageRes)
                     }
                     // If the last row has only one item, add an empty spacer
                     if (rowItems.size == 1) {
@@ -247,13 +253,19 @@ fun ExitDialogBox(context: Context) {
 
 
 @Composable
-fun CategoryItem(cat: String, drawable: Int) {
+fun HomeCategoryItem(viewModel: UserViewModel,navController: NavController, cat: String, drawable: Int) {
+    val currentRoute = CurrentRoute(navController)
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Card(
-            modifier = Modifier
+            modifier = Modifier.clickable {
+
+                viewModel.setCategory(cat)
+                navController.navigate("loadingPage")
+
+            }
                 .size(130.dp)
                 .padding(start = 15.dp, end = 10.dp, top = 20.dp),
             elevation = CardDefaults.cardElevation(10.dp),
@@ -373,5 +385,34 @@ fun Profile() {
         }
 
 
+    }
+}
+
+@Composable
+fun CurrentRoute(navController: NavController): String? {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    return navBackStackEntry?.destination?.route
+}
+
+
+@Composable
+fun LoadingScreen(navController: NavController) {
+
+    LaunchedEffect(Unit) {
+        delay(2000)  // Wait for 2 seconds
+
+        navController.navigate("categoriesPage") {
+            popUpTo("loadingPage") { inclusive = true } // Remove loading screen from back stack
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        BackHandler {
+            navController.navigate("home")
+        }
+        CircularProgressIndicator()
     }
 }

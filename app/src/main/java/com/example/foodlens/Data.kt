@@ -11,3 +11,29 @@ data class User(
     val mobile: String,
     val password: String
 )
+
+fun getCategoryList(category: String): List<Pair<Int, String>> {
+
+    return when (category) {
+        "Beverages" -> listOf(
+            Pair(R.drawable.beverages, "Beverages"),
+            Pair(R.drawable.beverages, "Beverages"),
+            Pair(R.drawable.beverages, "Beverages"),
+            Pair(R.drawable.beverages, "Beverages"),
+            Pair(R.drawable.beverages, "Beverages"),
+            Pair(R.drawable.beverages, "Beverages"),
+            Pair(R.drawable.beverages, "Beverages"),
+
+            )
+        "Biscuits" -> listOf(
+            Pair(R.drawable.biscuits, "Biscuits"),
+            Pair(R.drawable.biscuits, "Biscuits"),
+            Pair(R.drawable.biscuits, "Biscuits"),
+            Pair(R.drawable.biscuits, "Biscuits"),
+            Pair(R.drawable.biscuits, "Biscuits"),
+            Pair(R.drawable.biscuits, "Biscuits"),
+            Pair(R.drawable.biscuits, "Biscuits")
+        )
+        else -> emptyList() // Return empty list if category is not found
+    }
+}
