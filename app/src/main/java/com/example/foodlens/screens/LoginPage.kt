@@ -130,7 +130,9 @@ fun LoginPage(navHostController: NavHostController ,userViewModel: UserViewModel
                     if (isValid) {
 
                         saveCurrentUser(context,mobileNo)
+
                         sharedPreferences.edit().putBoolean("isLoggedIn", true).apply()
+
                         navHostController.navigate("home") {
                             popUpTo(0) // Removes login from back stack
                             launchSingleTop = true
@@ -194,8 +196,9 @@ fun TransparentTextField(
     placeholder: String,
     isNumberKeyboard: Boolean = false,
     isPassword: Boolean = false,
-    icon: ImageVector
+    icon: ImageVector,
 ) {
+    var isEditing by remember { mutableStateOf(true) }
     var passwordVisible by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
@@ -204,6 +207,7 @@ fun TransparentTextField(
             .padding(10.dp)
     ) {
         BasicTextField(
+            readOnly = !isEditing,
             value = value,
             onValueChange = onValueChange,
             singleLine = true,

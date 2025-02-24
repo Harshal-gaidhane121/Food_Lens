@@ -3,6 +3,8 @@ package com.example.foodlens.screens
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.Icon
 import android.provider.CalendarContract.Colors
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.LinearEasing
@@ -35,6 +37,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
@@ -59,6 +62,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -141,7 +145,7 @@ fun Home(navHostController: NavHostController,viewModel: UserViewModel) {
                 .padding(5.dp)
         ) {
             item{
-                Profile()
+               HomeTopBar("Home",Icons.Default.AccountCircle,navHostController)
             }
 
             item {
@@ -260,12 +264,13 @@ fun HomeCategoryItem(viewModel: UserViewModel,navController: NavController, cat:
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Card(
-            modifier = Modifier.clickable {
+            modifier = Modifier
+                .clickable {
 
-                viewModel.setCategory(cat)
-                navController.navigate("loadingPage")
+                    viewModel.setCategory(cat)
+                    navController.navigate("loadingPage")
 
-            }
+                }
                 .size(130.dp)
                 .padding(start = 15.dp, end = 10.dp, top = 20.dp),
             elevation = CardDefaults.cardElevation(10.dp),
@@ -335,7 +340,7 @@ fun Carousel() {
 
 
 @Composable
-fun Profile() {
+fun HomeTopBar(title:String, icon: ImageVector,navHostController: NavHostController) {
 
     Card(
         colors = CardDefaults.cardColors(containerColor = colorResource(R.color.lightGreen)),
@@ -358,14 +363,20 @@ fun Profile() {
             ) {
 
                 IconButton(
-                    onClick = {},
+                    onClick = {
+                            if (icon==Icons.Default.AccountCircle){
+                                navHostController.navigate("profile")
+                            }else{
+                                navHostController.popBackStack()
+                            }
+                    },
                     modifier = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(30.dp))
                         .background(color = colorResource(R.color.white))
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Person,
+                        imageVector = icon,
                         contentDescription = null,
                         modifier = Modifier.size(30.dp),
                         tint = colorResource(R.color.green)
@@ -375,11 +386,10 @@ fun Profile() {
                 Spacer(modifier = Modifier.width(20.dp))
 
                 Text(
-                    text = "Hi, Harshal",
+                    text = title,
                     color = Color(70, 66, 66, 193),
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Normal),
-
-                    ) // TODO REPLACE THIS WITH USERS NAME
+                    )
 
             }
         }

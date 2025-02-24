@@ -69,7 +69,7 @@ fun CategoriesPage(navHostController: NavHostController,viewModel: UserViewModel
 
             Column(modifier = Modifier.fillMaxSize()) {
 
-                TopAppBar(navHostController,"Products")
+                TopAppBar(navHostController,"Products",)
 
                 LazyColumn(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -111,7 +111,9 @@ fun TopAppBar(navHostController: NavHostController,title:String){
 
     Card (
         modifier = Modifier.padding(top=40.dp).fillMaxWidth(),
-        colors = CardDefaults.cardColors(colorResource(R.color.lightGreen)))
+        colors = CardDefaults.cardColors(colorResource(R.color.lightGreen)),
+        elevation = CardDefaults.cardElevation(10.dp)
+    )
     {
         Row(
             modifier = Modifier.padding(vertical = 10.dp).fillMaxWidth(.7f),

@@ -3,6 +3,7 @@ package com.example.foodlens
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
@@ -15,4 +16,8 @@ interface UserDao {
 
     @Query("SELECT COUNT(*) FROM users WHERE mobile = :mobile")
     suspend fun isMobileRegistered(mobile: String): Int
+
+    @Query("SELECT * FROM users WHERE id = :mobile")
+     fun getUser(mobile: String): Flow<User>
+
 }
