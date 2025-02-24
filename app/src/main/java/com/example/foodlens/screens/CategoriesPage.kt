@@ -110,7 +110,7 @@ fun CategoriesPage(navHostController: NavHostController,viewModel: UserViewModel
 fun TopAppBar(navHostController: NavHostController,title:String){
 
     Card (
-        modifier = Modifier.padding(top=40.dp).fillMaxWidth(),
+        modifier = Modifier.padding(top=40.dp, start = 10.dp, end = 10.dp).fillMaxWidth(),
         colors = CardDefaults.cardColors(colorResource(R.color.lightGreen)),
         elevation = CardDefaults.cardElevation(10.dp)
     )

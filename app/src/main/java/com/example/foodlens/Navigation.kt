@@ -39,7 +39,7 @@ fun Navigation(navController: NavController,context: Context) {
         composable("search") { SearchScreen(navController) }
         composable("profile") { ProfilePage(navController) }
         composable("categoriesPage"){ CategoriesPage(navController, userViewModel) }
-        composable("analysisPage"){ AnalysisPage("Snickers",4f,navController,) }
+        composable("analysisPage"){ AnalysisPage("Snickers",3f,navController,) }
         composable("loadingPage") { LoadingScreen(navController) }
 
     }

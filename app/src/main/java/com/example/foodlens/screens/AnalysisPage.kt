@@ -17,11 +17,13 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.foodlens.R
 import kotlin.math.min
 
@@ -29,32 +31,32 @@ import kotlin.math.min
 @Composable
 fun AnalysisPage(name: String, value:Float, navHostController: NavHostController) {
     Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 15.dp),
+        .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
         TopAppBar(navHostController,"Analysis")
 
         LazyColumn(modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 10.dp)) {
+            .fillMaxSize()) {
             item {
-                Spacer(modifier = Modifier.height(20.dp))
-
                 Card(modifier = Modifier
-                    .fillMaxWidth()
-                    .size(300.dp),
+                    .fillMaxWidth().
+                    padding(20.dp)
+                    .size(350.dp),
                     colors = CardDefaults.cardColors(Color.White),
                     elevation = CardDefaults.cardElevation(10.dp)
                 )
                 {
-                    Box(modifier = Modifier.fillMaxSize().padding(vertical = 20.dp),
+
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 20.dp),
                         contentAlignment = Alignment.Center)
                     {
                         Image(painter = painterResource(R.drawable.snickers),
                             contentDescription = null,
-                            modifier = Modifier.scale(.85f))
+                            modifier = Modifier.scale(1.2f))
 
                         Text(text = name,
                             modifier = Modifier.padding(top=180.dp),
@@ -63,25 +65,22 @@ fun AnalysisPage(name: String, value:Float, navHostController: NavHostController
                         )
 
                         MeterArc(value, modifier = Modifier.scale(1.1f))
+                        AboutColor()
 
                     }
-
 
 
                 }
             }
 
             item{
-                Spacer(modifier = Modifier.height(20.dp))
                 NutritionRow()
             }
 
             item{
-
-                Spacer(modifier = Modifier.height(20.dp))
-
                 Card(modifier = Modifier
                     .fillMaxWidth()
+                    .padding(20.dp)
                     .size(600.dp),
                     colors = CardDefaults.cardColors(Color.White),
                     elevation = CardDefaults.cardElevation(10.dp)
@@ -90,13 +89,12 @@ fun AnalysisPage(name: String, value:Float, navHostController: NavHostController
                     NutritionTable()
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Card(modifier = Modifier
+                Card(modifier = Modifier.
+                      padding(20.dp)
                     .fillMaxWidth()
                     .wrapContentSize(),
                     colors = CardDefaults.cardColors(Color.White),
-                    elevation = CardDefaults.cardElevation(10.dp)
+                    elevation = CardDefaults.cardElevation(10.dp),
                 )
                 {
                     Column(modifier = Modifier
@@ -125,8 +123,6 @@ fun AnalysisPage(name: String, value:Float, navHostController: NavHostController
                     }
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
-
             }
         }
     }
@@ -140,9 +136,9 @@ fun MeterArc(value: Float, modifier: Modifier = Modifier) {
         val sweepAngle = (252f / 5) * value // 70% of 360° scaled to 5 max value
 
         val color = when {
-            value < 2 -> Color.Red
-            value in 2f..3.5f -> Color.Yellow
-            else -> Color.Green
+            value < 2 -> colorResource(R.color.red)
+            value in 2f..3.5f -> colorResource(R.color.yellow)
+            else ->colorResource(R.color.green)
         }
 
         Canvas(modifier = modifier.size(400.dp)) {
@@ -150,7 +146,7 @@ fun MeterArc(value: Float, modifier: Modifier = Modifier) {
             val radius = min(size.width, size.height) / 2 - strokeWidth
 
             drawArc(
-                color = Color.LightGray,
+                color =Color(209, 231, 223, 237),
                 startAngle = -216f, // Start at -216° (left-top)
                 sweepAngle = 252f, // Full arc for reference
                 useCenter = false,
@@ -193,12 +189,12 @@ fun NutritionTable() {
 
         NutritionItems("Protein",4.2f)
         NutritionItems("Energy",4f)
-        NutritionItems("Fat",3.7f)
-        NutritionItems("Sugar",3.6f)
+        NutritionItems("Fat",2.4f)
+        NutritionItems("Sugar",1.7f)
         NutritionItems("Cholesterol",2f)
         NutritionItems("Saturated fat",1f)
-        NutritionItems("Carbohydrates",3.6f)
-        NutritionItems("Fiber",4f)
+        NutritionItems("Carbohydrates",3f)
+        NutritionItems("Fiber",3.3f)
         NutritionItems("Salt",3.3f)
         NutritionItems("Fruits, vegetable, nuts and rapeseed, walnut and olive oil",3f)
 
@@ -227,16 +223,16 @@ fun NutritionItems(name: String, value: Float,) {
                 val progress = value / 5f // Normalize value (0-5) → (0-1)
 
                 val color = when {
-                    value < 2 -> Color.Red
-                    value in 2f..3.9f -> Color.Yellow
-                    else -> Color.Green
+                    value < 2 ->colorResource(R.color.red)
+                    value in 2f..3.9f -> colorResource(R.color.yellow)
+                    else -> colorResource(R.color.green)
                 }
 
                 Box(
                     modifier = Modifier
                         .fillMaxWidth() // 70% width
                         .height(10.dp) // Thickness
-                        .background(Color.LightGray, RoundedCornerShape(10.dp)) // Background
+                        .background(colorResource(R.color.lightGrey), RoundedCornerShape(10.dp)) // Background
                 ) {
                     Box(
                         modifier = Modifier
@@ -277,22 +273,52 @@ fun NutritionRow() {
 fun NutritionRowItem( name :String,value: Float,) {
 
     val color = when {
-        value < 2 -> Color.Red
-        value in 2f..3.9f -> Color.Yellow
-        else -> Color.Green
+        value < 2 -> colorResource(R.color.red)
+        value in 2f..3.9f -> colorResource(R.color.yellow)
+        else -> colorResource(R.color.green)
     }
     Button(
         onClick = {
 
         },
-        colors = ButtonDefaults.buttonColors(color)
+        colors = ButtonDefaults.buttonColors(color),
+        modifier = Modifier.padding(horizontal = 10.dp)
     ) {
         Text(text=name,color=Color.White)
     }
 }
-//@Preview(showBackground = true)
-//@Composable
-//fun MeterArcPreview() {
-//
-//}
 
+@Composable
+fun AboutColor() {
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomStart)
+    {
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically)
+        {
+            AboutColorItem("Healthy",colorResource(R.color.green))
+            AboutColorItem("Neutral", colorResource(R.color.yellow))
+            AboutColorItem("Unhealthy",colorResource(R.color.red))
+
+        }
+    }
+
+}
+
+@Composable
+fun AboutColorItem(text:String,color: Color) {
+    Row(verticalAlignment = Alignment.CenterVertically){
+
+        Canvas(modifier = Modifier.size(15.dp)) {
+            drawCircle(color = color, radius = size.minDimension / 2)
+        }
+        Spacer(modifier = Modifier.size(5.dp))
+        Text(text=text,
+            fontSize = 15.sp)
+
+    }
+
+}
