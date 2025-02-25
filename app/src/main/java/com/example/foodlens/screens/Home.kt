@@ -61,6 +61,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -95,10 +97,10 @@ fun Home(navHostController: NavHostController,viewModel: UserViewModel) {
     val category = listOf(
         Pair(R.drawable.beverages, "Beverages"),
         Pair(R.drawable.biscuits, "Biscuits"),
-        Pair(R.drawable.breads, "Breads"),
+        Pair(R.drawable.bread, "Breads"),
         Pair(R.drawable.cereals, "Cereals"),
         Pair(R.drawable.chocolates, "Chocolates"),
-        Pair(R.drawable.dairyproduct, "Dairy Product"),
+        Pair(R.drawable.dairyproducts, "Dairy Product"),
         Pair(R.drawable.drinks, "Drinks"),
         Pair(R.drawable.icecream, "Ice Creams"),
         Pair(R.drawable.noodles, "Noodles"),
@@ -119,16 +121,8 @@ fun Home(navHostController: NavHostController,viewModel: UserViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 40.dp)
+            .padding(top = 30.dp)
     ) {
-
-
-        Image(
-            painter = painterResource(R.drawable.plainbackground),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
 
 //        TopBar()
 
@@ -136,27 +130,29 @@ fun Home(navHostController: NavHostController,viewModel: UserViewModel) {
 //            colors = CardDefaults.cardColors(colorResource(R.color.lightGreen))){
 //
 //        }
-
-
         LazyColumn(
-            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(5.dp)
+                .padding(bottom=40.dp,top=20.dp,start=15.dp,end=15.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            item{
-               HomeTopBar("Home",Icons.Default.AccountCircle,navHostController)
-            }
-
             item {
-                Text(
-                    text = "HEALTH TIPS AND ARTICLES",
-                    modifier = Modifier.padding(20.dp),
-                    color = Color(54, 54, 54, 191),
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Normal)
-                )
-            }
+                Row(modifier = Modifier.fillMaxWidth()){
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        Text(
+                            text = "Welcome",
+                            modifier = Modifier.padding(horizontal = 30.dp),
+                            color = Color(54, 54, 54, 191),
+                            style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Normal)
+                        )
+                        Text(
+                            text="healthy insights",
+                            modifier = Modifier.padding(horizontal = 30.dp),
+                        )
+                    }
 
+                }
+            }
             item {
                 Carousel()
             }
@@ -164,24 +160,16 @@ fun Home(navHostController: NavHostController,viewModel: UserViewModel) {
             item {
                 Text(
                     text = "Healthy Food Choice",
-                    modifier = Modifier.padding(),
+                    modifier = Modifier.align(Alignment.Center),
                     color = Color(54, 54, 54, 191),
-                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Normal)
-                )
-
-                Text(
-                    text = "HOW TO JUMP ON A HEALTHY BANDWAGON WITH EASE",
-                    modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
-                    textAlign = TextAlign.Center,
-                    color = Color(54, 54, 54, 191),
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
+                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Normal)
                 )
 
             }
-            items(category.chunked(3)) { rowItems ->
+            items(category.chunked(2)) { rowItems ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     rowItems.forEach { (imageRes, title) ->
 
@@ -195,7 +183,7 @@ fun Home(navHostController: NavHostController,viewModel: UserViewModel) {
 
             }
             item {
-                Spacer(modifier = Modifier.height(90.dp))
+                Spacer(modifier = Modifier.height(60.dp))
             }
 
         }
@@ -259,10 +247,7 @@ fun ExitDialogBox(context: Context) {
 @Composable
 fun HomeCategoryItem(viewModel: UserViewModel,navController: NavController, cat: String, drawable: Int) {
     val currentRoute = CurrentRoute(navController)
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+
         Card(
             modifier = Modifier
                 .clickable {
@@ -271,27 +256,26 @@ fun HomeCategoryItem(viewModel: UserViewModel,navController: NavController, cat:
                     navController.navigate("loadingPage")
 
                 }
-                .size(130.dp)
-                .padding(start = 15.dp, end = 10.dp, top = 20.dp),
+                .size(180.dp)
+                .padding( top = 20.dp),
             elevation = CardDefaults.cardElevation(10.dp),
             shape = RoundedCornerShape(10.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            Column (
+                modifier = Modifier.fillMaxSize().padding(top=20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly){
                 Image(
                     painter = painterResource(id = drawable), contentDescription = cat,
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.scale(1.5f)
                 )
+                Text(text = cat, fontWeight = FontWeight.ExtraBold, fontSize =16.sp)
             }
         }
-        Text(text = cat)
     }
 
-
-}
 
 @Composable
 fun Carousel() {
@@ -317,7 +301,7 @@ fun Carousel() {
         state = pagerState,
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(170.dp)
     ) { page ->
         Box(
             modifier = Modifier.fillMaxSize(),

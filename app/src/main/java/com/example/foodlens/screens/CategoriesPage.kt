@@ -49,10 +49,10 @@ fun CategoriesPage(navHostController: NavHostController,viewModel: UserViewModel
     val category = listOf(
         Pair(R.drawable.beverages, "Beverages"),
         Pair(R.drawable.biscuits, "Biscuits"),
-        Pair(R.drawable.breads, "Breads"),
+        Pair(R.drawable.bread, "Breads"),
         Pair(R.drawable.cereals, "Cereals"),
         Pair(R.drawable.chocolates, "Chocolates"),
-        Pair(R.drawable.dairyproduct, "Dairy Product"),
+        Pair(R.drawable.dairyproducts, "Dairy Product"),
         Pair(R.drawable.drinks, "Drinks"),
         Pair(R.drawable.icecream, "Ice Creams"),
         Pair(R.drawable.noodles, "Noodles"),

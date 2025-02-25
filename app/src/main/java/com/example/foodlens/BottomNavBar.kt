@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -24,8 +25,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun FloatingBottomNavigation(navHostController: NavHostController) {
-    val items = listOf("home", "search", "profile")
-    val icons = listOf(Icons.Default.Home, Icons.Default.Search, Icons.Default.Person)
+    val items = listOf("home", "search","about", "profile",)
+    val icons = listOf(Icons.Default.Home, Icons.Default.Search,Icons.Default.Notifications, Icons.Default.Person)
 
     // Track current destination
     val currentDestination by navHostController.currentBackStackEntryAsState()
@@ -33,17 +34,16 @@ fun FloatingBottomNavigation(navHostController: NavHostController) {
 
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
+            .fillMaxSize().padding(10.dp),
         contentAlignment = Alignment.BottomCenter
     ) {
         Card(
-            colors = CardDefaults.cardColors(containerColor = colorResource(R.color.lightGreen)),
-            elevation = CardDefaults.cardElevation(10.dp),
+            colors = CardDefaults.cardColors(containerColor = colorResource(R.color.white)),
+            elevation = CardDefaults.cardElevation(8.dp),
             shape = RoundedCornerShape(40.dp),
             modifier = Modifier
                 .height(70.dp)
-                .fillMaxWidth(0.8f),
+                .fillMaxWidth(),
         ) {
             Row(
                 modifier = Modifier
@@ -68,14 +68,14 @@ fun FloatingBottomNavigation(navHostController: NavHostController) {
                         modifier = Modifier
                             .clip(RoundedCornerShape(30.dp))
                             .background(
-                                if (selectedItem == index) Color(255, 255, 255, 213) else Color.Transparent
+                                if (selectedItem == index) Color(183, 181, 181, 119) else Color.Transparent
                             )
                     ) {
                         Icon(
                             imageVector = icons[index],
                             modifier = Modifier.scale(1.4f),
                             contentDescription = route,
-                            tint = colorResource(R.color.green)
+                            tint = Color.Gray
                         )
                     }
                 }
