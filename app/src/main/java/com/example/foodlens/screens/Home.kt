@@ -1,17 +1,9 @@
 package com.example.foodlens.screens
 
+import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.Icon
-import android.provider.CalendarContract.Colors
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,20 +19,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -60,9 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -70,8 +53,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -80,19 +61,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.foodlens.FloatingBottomNavigation
 import com.example.foodlens.R
 import com.example.foodlens.UserViewModel
-import com.example.foodlens.ui.theme.TopBar
 import kotlinx.coroutines.delay
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
-import java.util.Locale.Category
 
 
 @Composable
-fun Home(navHostController: NavHostController,viewModel: UserViewModel) {
-
+fun Home(navHostController: NavHostController, viewModel: UserViewModel) {
 
     val context = LocalContext.current
-
-
 
     val category = listOf(
         Pair(R.drawable.beverages, "Beverages"),
@@ -101,28 +76,25 @@ fun Home(navHostController: NavHostController,viewModel: UserViewModel) {
         Pair(R.drawable.cereals, "Cereals"),
         Pair(R.drawable.chocolates, "Chocolates"),
         Pair(R.drawable.dairyproducts, "Dairy Product"),
-        Pair(R.drawable.drinks, "Drinks"),
         Pair(R.drawable.icecream, "Ice Creams"),
-        Pair(R.drawable.noodles, "Noodles"),
-        Pair(R.drawable.nutbars, "Cereals"),
-        Pair(R.drawable.chocolates, "Nut bars"),
+        Pair(R.drawable.nutbars, "Nut bars"),
         Pair(R.drawable.oilandghee, "Oil And Ghee"),
-        Pair(R.drawable.snacks, "Snacks"),
+        Pair(R.drawable.snackstemplate, "Snacks"),
         Pair(R.drawable.spices, "Spices"),
-        Pair(R.drawable.toast, "Toast"),
-        Pair(R.drawable.vegetables, "Vegetables"),
+        Pair(R.drawable.vegetable, "Vegetables"),
         Pair(R.drawable.wheat, "Wheat"),
-        Pair(R.drawable.wheat, "Wheat"),
-
-
-        )
-
+    )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(top = 30.dp)
     ) {
+        Image(
+            painter = painterResource(R.drawable.background),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize()
+        )
 
 //        TopBar()
 
@@ -133,11 +105,11 @@ fun Home(navHostController: NavHostController,viewModel: UserViewModel) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom=40.dp,top=20.dp,start=15.dp,end=15.dp),
+                .padding(bottom = 40.dp, top = 20.dp, start = 15.dp, end = 15.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
-                Row(modifier = Modifier.fillMaxWidth()){
+                Row(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.fillMaxSize()) {
                         Text(
                             text = "Welcome",
@@ -146,7 +118,7 @@ fun Home(navHostController: NavHostController,viewModel: UserViewModel) {
                             style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Normal)
                         )
                         Text(
-                            text="healthy insights",
+                            text = "healthy insights",
                             modifier = Modifier.padding(horizontal = 30.dp),
                         )
                     }
@@ -173,7 +145,12 @@ fun Home(navHostController: NavHostController,viewModel: UserViewModel) {
                 ) {
                     rowItems.forEach { (imageRes, title) ->
 
-                        HomeCategoryItem(viewModel,navHostController,cat = title, drawable = imageRes)
+                        HomeCategoryItem(
+                            viewModel,
+                            navHostController,
+                            cat = title,
+                            drawable = imageRes
+                        )
                     }
                     // If the last row has only one item, add an empty spacer
                     if (rowItems.size == 1) {
@@ -212,21 +189,21 @@ fun ExitDialogBox(context: Context) {
 
     if (showExitDialog) {
         AlertDialog(
-            containerColor =Color.White,
+            containerColor = Color.White,
             onDismissRequest = { showExitDialog = false },
-            title = { Text("Exit App", color = Color(1,1,1)) },
-            text = { Text("Are you sure you want to exit?", color = Color(1,1,1)) },
+            title = { Text("Exit App", color = Color(1, 1, 1)) },
+            text = { Text("Are you sure you want to exit?", color = Color(1, 1, 1)) },
             confirmButton = {
 
                 Button(
                     colors = ButtonDefaults.buttonColors(colorResource(R.color.lightGreen)),
                     onClick = {
-                    showExitDialog = false
+                        showExitDialog = false
 
-                    (context as? Activity)?.finish()
+                        (context as? Activity)?.finish()
 
 //                    activity.value?.finish()    Exit app
-                }) {
+                    }) {
                     Text("Yes")
                 }
             },
@@ -240,41 +217,50 @@ fun ExitDialogBox(context: Context) {
             }
         )
     }
-    
+
 }
 
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
-fun HomeCategoryItem(viewModel: UserViewModel,navController: NavController, cat: String, drawable: Int) {
+fun HomeCategoryItem(
+    viewModel: UserViewModel,
+    navController: NavController,
+    cat: String,
+    drawable: Int
+) {
     val currentRoute = CurrentRoute(navController)
 
-        Card(
-            modifier = Modifier
-                .clickable {
+    Card(
+        modifier = Modifier
+            .clickable {
 
-                    viewModel.setCategory(cat)
-                    navController.navigate("loadingPage")
+                viewModel.setCategory(cat)
+                navController.navigate("loadingPage")
 
-                }
-                .size(180.dp)
-                .padding( top = 20.dp),
-            elevation = CardDefaults.cardElevation(10.dp),
-            shape = RoundedCornerShape(10.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
-        ) {
-            Column (
-                modifier = Modifier.fillMaxSize().padding(top=20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceEvenly){
-                Image(
-                    painter = painterResource(id = drawable), contentDescription = cat,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.scale(1.5f)
-                )
-                Text(text = cat, fontWeight = FontWeight.ExtraBold, fontSize =16.sp)
             }
+            .size(180.dp)
+            .padding(top = 20.dp),
+        elevation = CardDefaults.cardElevation(10.dp),
+        shape = RoundedCornerShape(10.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Image(
+                painter = painterResource(id = drawable), contentDescription = cat,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.scale(1.5f)
+            )
+            Text(text = cat, fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
         }
     }
+}
 
 
 @Composable
@@ -322,9 +308,8 @@ fun Carousel() {
 }
 
 
-
 @Composable
-fun HomeTopBar(title:String, icon: ImageVector,navHostController: NavHostController) {
+fun HomeTopBar(title: String, icon: ImageVector, navHostController: NavHostController) {
 
     Card(
         colors = CardDefaults.cardColors(containerColor = colorResource(R.color.lightGreen)),
@@ -348,11 +333,11 @@ fun HomeTopBar(title:String, icon: ImageVector,navHostController: NavHostControl
 
                 IconButton(
                     onClick = {
-                            if (icon==Icons.Default.AccountCircle){
-                                navHostController.navigate("profile")
-                            }else{
-                                navHostController.popBackStack()
-                            }
+                        if (icon == Icons.Default.AccountCircle) {
+                            navHostController.navigate("profile")
+                        } else {
+                            navHostController.popBackStack()
+                        }
                     },
                     modifier = Modifier
                         .size(40.dp)
@@ -373,7 +358,7 @@ fun HomeTopBar(title:String, icon: ImageVector,navHostController: NavHostControl
                     text = title,
                     color = Color(70, 66, 66, 193),
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Normal),
-                    )
+                )
 
             }
         }

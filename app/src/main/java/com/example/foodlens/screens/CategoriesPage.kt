@@ -1,11 +1,9 @@
 package com.example.foodlens.screens
 
 import android.annotation.SuppressLint
-import android.graphics.pdf.models.ListItem
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,7 +24,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,8 +36,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.foodlens.R
 import com.example.foodlens.UserViewModel
-import com.example.foodlens.getCategoryList
-import kotlinx.coroutines.delay
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
@@ -53,17 +48,12 @@ fun CategoriesPage(navHostController: NavHostController,viewModel: UserViewModel
         Pair(R.drawable.cereals, "Cereals"),
         Pair(R.drawable.chocolates, "Chocolates"),
         Pair(R.drawable.dairyproducts, "Dairy Product"),
-        Pair(R.drawable.drinks, "Drinks"),
         Pair(R.drawable.icecream, "Ice Creams"),
-        Pair(R.drawable.noodles, "Noodles"),
-        Pair(R.drawable.nutbars, "Cereals"),
-        Pair(R.drawable.chocolates, "Nut bars"),
+        Pair(R.drawable.nutbars, "Nut bars"),
         Pair(R.drawable.oilandghee, "Oil And Ghee"),
-        Pair(R.drawable.snacks, "Snacks"),
+        Pair(R.drawable.snackstemplate, "Snacks"),
         Pair(R.drawable.spices, "Spices"),
-        Pair(R.drawable.toast, "Toast"),
-        Pair(R.drawable.vegetables, "Vegetables"),
-        Pair(R.drawable.wheat, "Wheat"),
+        Pair(R.drawable.vegetable, "Vegetables"),
         Pair(R.drawable.wheat, "Wheat"),
         )
 
