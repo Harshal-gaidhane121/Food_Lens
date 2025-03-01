@@ -1,5 +1,7 @@
 [versions]
 agp = "8.7.3"
+androidxActivityActivityCompose = "1.8.0"
+composeBomVersion = "2024.02.00"
 coreKtxVersion = "1.7.0"
 datastorePreferences = "1.1.2"
 kotlin = "2.0.0"
@@ -15,8 +17,12 @@ navigationComposeVersion = "2.7.5"
 room = "2.6.0"
 googleGmsGoogleServices = "4.4.2"
 firebaseFirestore = "25.1.2"
+ui = "1.7.8"
+uiToolingPreview = "1.7.8"
 
 [libraries]
+androidx-activity-activity-compose-v180-x2 = { module = "androidx.activity:activity-compose", version.ref = "androidxActivityActivityCompose" }
+androidx-compose-bom-v20240200 = { module = "androidx.compose:compose-bom", version.ref = "composeBomVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-ktx-v170 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
@@ -39,6 +45,8 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
+ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

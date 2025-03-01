@@ -42,7 +42,8 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.androidx.compose.bom.v20240200)
+    implementation("androidx.webkit:webkit:1.8.0")
 // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)

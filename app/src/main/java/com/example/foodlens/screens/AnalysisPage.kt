@@ -1,11 +1,14 @@
 package com.example.foodlens.screens
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -13,10 +16,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -41,8 +46,8 @@ fun AnalysisPage(name: String, value:Float, navHostController: NavHostController
             .fillMaxSize()) {
             item {
                 Card(modifier = Modifier
-                    .fillMaxWidth().
-                    padding(20.dp)
+                    .fillMaxWidth()
+                    .padding(20.dp)
                     .size(350.dp),
                     colors = CardDefaults.cardColors(Color.White),
                     elevation = CardDefaults.cardElevation(10.dp)
@@ -68,59 +73,30 @@ fun AnalysisPage(name: String, value:Float, navHostController: NavHostController
                         AboutColor()
 
                     }
-
-
                 }
-            }
-
-            item{
-                NutritionRow()
             }
 
             item{
                 Card(modifier = Modifier
                     .fillMaxWidth()
                     .padding(20.dp)
-                    .size(600.dp),
+                    .size(100.dp),
                     colors = CardDefaults.cardColors(Color.White),
                     elevation = CardDefaults.cardElevation(10.dp)
                 )
                 {
-                    NutritionTable()
+                    NutritionItem("Energy",8f)
                 }
 
-                Card(modifier = Modifier.
-                      padding(20.dp)
+                Card(modifier = Modifier
+                    .padding(20.dp)
                     .fillMaxWidth()
                     .wrapContentSize(),
                     colors = CardDefaults.cardColors(Color.White),
                     elevation = CardDefaults.cardElevation(10.dp),
                 )
                 {
-                    Column(modifier = Modifier
-                        .fillMaxSize()
-                        .padding(20.dp)) {
 
-                        Row(modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically){
-                            Text(
-                                text="Conclusion",
-                                color = Color(54, 54, 54, 191),
-                                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Normal))
-                        }
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        Row(modifier = Modifier.fillMaxSize()){
-                            Text(
-                                text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-                                textAlign = TextAlign.Justify,
-                                color = Color(54, 54, 54, 191),
-                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
-                                )
-                        }
-
-                    }
                 }
 
             }
@@ -169,124 +145,6 @@ fun MeterArc(value: Float, modifier: Modifier = Modifier) {
 
 }
 
-@Composable
-fun NutritionTable() {
-
-    Column (modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly){
-
-        Row (modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            Text(text="Nutrition Table",
-                color = Color(54, 54, 54, 191),
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Normal))
-        }
-
-        NutritionItems("Protein",4.2f)
-        NutritionItems("Energy",4f)
-        NutritionItems("Fat",2.4f)
-        NutritionItems("Sugar",1.7f)
-        NutritionItems("Cholesterol",2f)
-        NutritionItems("Saturated fat",1f)
-        NutritionItems("Carbohydrates",3f)
-        NutritionItems("Fiber",3.3f)
-        NutritionItems("Salt",3.3f)
-        NutritionItems("Fruits, vegetable, nuts and rapeseed, walnut and olive oil",3f)
-
-
-    }
-
-}
-
-@Composable
-fun NutritionItems(name: String, value: Float,) {
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically)
-    {
-        Column() {
-
-            Row(){
-                Text(text = name,
-                    color = Color(54, 54, 54, 191),
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal))
-            }
-            Spacer(modifier = Modifier.height(5.dp))
-            Row(){
-                val progress = value / 5f // Normalize value (0-5) → (0-1)
-
-                val color = when {
-                    value < 2 ->colorResource(R.color.red)
-                    value in 2f..3.9f -> colorResource(R.color.yellow)
-                    else -> colorResource(R.color.green)
-                }
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth() // 70% width
-                        .height(10.dp) // Thickness
-                        .background(colorResource(R.color.lightGrey), RoundedCornerShape(10.dp)) // Background
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(progress) // Fill based on value
-                            .height(10.dp)
-                            .background(color, RoundedCornerShape(10.dp)) // Foreground
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun NutritionRow() {
-
-    LazyRow(modifier = Modifier.fillMaxWidth()) {
-
-        item{
-            NutritionRowItem("Protein",4.2f)
-            NutritionRowItem("Energy",4f)
-            NutritionRowItem("Fat",3.7f)
-            NutritionRowItem("Sugar",3.6f)
-            NutritionRowItem("Cholesterol",2f)
-            NutritionRowItem("Saturated fat",1f)
-            NutritionRowItem("Carbohydrates",3.6f)
-            NutritionRowItem("Fiber",4f)
-            NutritionRowItem("Salt",3.3f)
-        }
-
-    }
-}
-
-
-
-
-@Composable
-fun NutritionRowItem( name :String,value: Float,) {
-
-    val color = when {
-        value < 2 -> colorResource(R.color.red)
-        value in 2f..3.9f -> colorResource(R.color.yellow)
-        else -> colorResource(R.color.green)
-    }
-    Button(
-        onClick = {
-
-        },
-        colors = ButtonDefaults.buttonColors(color),
-        modifier = Modifier.padding(horizontal = 10.dp)
-    ) {
-        Text(text=name,color=Color.White)
-    }
-}
 
 @Composable
 fun AboutColor() {
@@ -322,3 +180,222 @@ fun AboutColorItem(text:String,color: Color) {
     }
 
 }
+
+@Composable
+fun RatingMeter(
+    rating: Float=7f // Value from 0 to 10
+) {
+    val animatedRating by animateFloatAsState(targetValue = min(rating, 10f), label = "")
+
+    val colors = listOf(
+        Color(0xFFD32F2F) , // Red
+        Color(0xFFFF8C00), // Orange
+        Color(0xFFFFC20E), // Yellow
+        Color(0xFF7AC943), // Light Green
+    )
+
+    val sectionCount = colors.size
+    val sectionWidth = 60.dp // Adjust width of each section
+    val spacing = 4.dp // Gap between sections
+
+    Column() {
+        // Meter
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(50))
+                .background(Color(213, 210, 210, 164))
+                .padding(5.dp)
+
+        ) {
+            colors.forEachIndexed { index, color ->
+                if(index==0 ){
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(15.dp)
+                            .padding(horizontal = 1.dp)
+                            .clip(RoundedCornerShape(topStart = 50.dp, bottomStart = 50.dp))
+                            .background(color)
+                            .padding(horizontal = if (index < sectionCount - 1) spacing else 0.dp)
+                    )
+                }
+                else if(index==3){
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 1.dp)
+                            .height(15.dp)
+                            .clip(RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp))
+                            .background(color)
+                            .padding(horizontal = if (index < sectionCount - 1) spacing else 0.dp)
+                    )
+                }
+                else{
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 1.dp)
+                            .height(15.dp)
+                            .background(color)
+                            .padding(horizontal = if (index < sectionCount - 1) spacing else 0.dp)
+                    )
+                }
+
+            }
+        }
+
+        // Pointer
+        Canvas(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(15.dp)
+        ) {
+            val totalWidth = size.width
+            val position = (animatedRating / 10f) * totalWidth
+
+            // Draw pointer triangle
+            val pointerSize = 40f
+            val path = Path().apply {
+                moveTo(position, 0f)
+                lineTo(position - pointerSize / 2, pointerSize)
+                lineTo(position + pointerSize / 2, pointerSize)
+                close()
+            }
+
+            drawIntoCanvas {
+                it.drawPath(path, Paint())
+            }
+        }
+    }
+}
+
+@Composable
+fun NutritionItem(item : String, rating: Float) {
+
+    Card(modifier = Modifier.fillMaxWidth().size(80.dp)) {
+
+        Text(text=item)
+        RatingMeter(rating)
+    }
+    
+}
+//
+//@Composable
+//fun NutritionTable() {
+//
+//    Column (modifier = Modifier
+//        .fillMaxSize()
+//        .padding(horizontal = 20.dp),
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//        verticalArrangement = Arrangement.SpaceEvenly){
+//
+//        Row (modifier = Modifier.fillMaxWidth(),
+//            horizontalArrangement = Arrangement.Center,
+//            verticalAlignment = Alignment.CenterVertically
+//        ){
+//            Text(text="Nutrition Table",
+//                color = Color(54, 54, 54, 191),
+//                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Normal))
+//        }
+//
+//        NutritionItems("Protein",4.2f)
+//        NutritionItems("Energy",4f)
+//        NutritionItems("Fat",2.4f)
+//        NutritionItems("Sugar",1.7f)
+//        NutritionItems("Cholesterol",2f)
+//        NutritionItems("Saturated fat",1f)
+//        NutritionItems("Carbohydrates",3f)
+//        NutritionItems("Fiber",3.3f)
+//        NutritionItems("Salt",3.3f)
+//        NutritionItems("Fruits, vegetable, nuts and rapeseed, walnut and olive oil",3f)
+//
+//
+//    }
+//
+//}
+
+//@Composable
+//fun NutritionItems(name: String, value: Float,) {
+//
+//    Row(
+//        modifier = Modifier.fillMaxWidth(),
+//        horizontalArrangement = Arrangement.Start,
+//        verticalAlignment = Alignment.CenterVertically)
+//    {
+//        Column() {
+//
+//            Row(){
+//                Text(text = name,
+//                    color = Color(54, 54, 54, 191),
+//                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal))
+//            }
+//            Spacer(modifier = Modifier.height(5.dp))
+//            Row(){
+//                val progress = value / 5f // Normalize value (0-5) → (0-1)
+//
+//                val color = when {
+//                    value < 2 ->colorResource(R.color.red)
+//                    value in 2f..3.9f -> colorResource(R.color.yellow)
+//                    else -> colorResource(R.color.green)
+//                }
+//
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth() // 70% width
+//                        .height(10.dp) // Thickness
+//                        .background(colorResource(R.color.lightGrey), RoundedCornerShape(10.dp)) // Background
+//                ) {
+//                    Box(
+//                        modifier = Modifier
+//                            .fillMaxWidth(progress) // Fill based on value
+//                            .height(10.dp)
+//                            .background(color, RoundedCornerShape(10.dp)) // Foreground
+//                    )
+//                }
+//            }
+//        }
+//    }
+//}
+
+//@Composable
+//fun NutritionRow() {
+//
+//    LazyRow(modifier = Modifier.fillMaxWidth()) {
+//
+//        item{
+//            NutritionRowItem("Protein",4.2f)
+//            NutritionRowItem("Energy",4f)
+//            NutritionRowItem("Fat",3.7f)
+//            NutritionRowItem("Sugar",3.6f)
+//            NutritionRowItem("Cholesterol",2f)
+//            NutritionRowItem("Saturated fat",1f)
+//            NutritionRowItem("Carbohydrates",3.6f)
+//            NutritionRowItem("Fiber",4f)
+//            NutritionRowItem("Salt",3.3f)
+//        }
+//
+//    }
+//}
+
+
+//
+//
+//@Composable
+//fun NutritionRowItem( name :String,value: Float,) {
+//
+//    val color = when {
+//        value < 2 -> colorResource(R.color.red)
+//        value in 2f..3.9f -> colorResource(R.color.yellow)
+//        else -> colorResource(R.color.green)
+//    }
+//    Button(
+//        onClick = {
+//
+//        },
+//        colors = ButtonDefaults.buttonColors(color),
+//        modifier = Modifier.padding(horizontal = 10.dp)
+//    ) {
+//        Text(text=name,color=Color.White)
+//    }
+//}
+

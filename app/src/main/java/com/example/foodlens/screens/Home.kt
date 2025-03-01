@@ -267,10 +267,10 @@ fun HomeCategoryItem(
 fun Carousel() {
 
     val images = listOf(
-        R.drawable.snacks,
-        R.drawable.snacks,
-        R.drawable.snacks,
-        R.drawable.snacks
+        R.drawable.carousel1,
+        R.drawable.carousel1,
+        R.drawable.carousel1,
+        R.drawable.carousel1
     )
 
     val pagerState = rememberPagerState(pageCount = { images.size })
