@@ -27,6 +27,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -56,16 +57,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.foodlens.R
 import com.example.foodlens.UserViewModel
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 @Composable
-fun LoginPage(navHostController: NavHostController ,userViewModel: UserViewModel = viewModel()) {
+fun LoginPage(navHostController: NavHostController) {
     var mobileNo by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+
     val context = LocalContext.current
-    val sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-    val sharedPref = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-    sharedPref.edit().clear().apply()  // Clears all data
+    val firestore = FirebaseFirestore.getInstance()
 
     Image(
         painter = painterResource(R.drawable.background2),
@@ -78,8 +80,6 @@ fun LoginPage(navHostController: NavHostController ,userViewModel: UserViewModel
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(20.dp)
     ) {
-        ExitDialogBox(context)
-
         Spacer(modifier = Modifier.height(160.dp))
 
         Text(
@@ -103,7 +103,6 @@ fun LoginPage(navHostController: NavHostController ,userViewModel: UserViewModel
             placeholder = "Mobile No.",
             isNumberKeyboard = true,
             icon = Icons.Default.AccountBox
-
         )
 
         TransparentTextField(
@@ -123,40 +122,23 @@ fun LoginPage(navHostController: NavHostController ,userViewModel: UserViewModel
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(Color.Transparent),
             onClick = {
-                if(mobileNo.isEmpty() || password.isEmpty() ){
+                if (mobileNo.isEmpty() || password.isEmpty()) {
                     Toast.makeText(context, "Incomplete credentials", Toast.LENGTH_SHORT).show()
-                }
-                userViewModel.loginUser(mobileNo, password) { isValid ->
-                    if (isValid) {
-
-                        saveCurrentUser(context,mobileNo)
-
-                        sharedPreferences.edit().putBoolean("isLoggedIn", true).apply()
-
-                        navHostController.navigate("home") {
-                            popUpTo(0) // Removes login from back stack
-                            launchSingleTop = true
-                        }
-
-                    } else {
-                        Toast.makeText(context, "Invalid credentials", Toast.LENGTH_SHORT).show()
+                } else {
+                    isLoading = true
+                    loginUser(firestore, context, mobileNo, password, navHostController) {
+                        isLoading = false
                     }
                 }
-                //TODO CHECK CREDENTIALS FROM DATABASE AND IF CORRECT
-            }) {
-            Text(
-                text = "Login",
-                fontSize = 19.sp,
-                color = Color.White
-                )
+            }
+        ) {
+            Text(text = "Login", fontSize = 19.sp, color = Color.White)
         }
 
-        TextButton(onClick = {
+        Spacer(modifier = Modifier.height(20.dp))
 
-        }) {
-            Text(text="Forget Password?",
-                color = colorResource(R.color.green)
-            )
+        TextButton(onClick = { /* TODO: Handle forgot password */ }) {
+            Text(text = "Forget Password?", color = colorResource(R.color.green))
         }
 
         Spacer(modifier = Modifier.height(30.dp))
@@ -165,28 +147,69 @@ fun LoginPage(navHostController: NavHostController ,userViewModel: UserViewModel
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            Text(text="Don't have an account yet?", color = Color(1, 1, 1, 122))
+            Text(text = "Don't have an account yet?", color = Color(1, 1, 1, 122))
 
             TextButton(
                 contentPadding = PaddingValues(0.dp),
                 onClick = {
-                    //REGISTER into DATABASE
-                    navHostController.navigate("register"){
-                        popUpTo("loginPage"){
-                            inclusive=true
-                        }
+                    navHostController.navigate("register") {
+                        popUpTo("loginPage") { inclusive = true }
                     }
                 }
             ) {
-                Text(
-                    text="Register",
-                    color = colorResource(R.color.green),
-                )
+                Text(text = "Register", color = colorResource(R.color.green))
             }
         }
-
     }
+
+    if (isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    }
+}
+
+fun loginUser(
+    firestore: FirebaseFirestore,
+    context: Context,
+    mobileNo: String,
+    password: String,
+    navHostController: NavHostController,
+    onComplete: () -> Unit
+) {
+    firestore.collection("Users")
+        .document(mobileNo)
+        .get()
+        .addOnSuccessListener { document ->
+            if (document.exists()) {
+                val storedPassword = document.getString("password")
+                if (storedPassword == password) {
+                    saveCurrentUser(context, mobileNo)
+
+                    context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+                        .edit().putBoolean("isLoggedIn", true).apply()
+
+                    Toast.makeText(context, "Login Successful!", Toast.LENGTH_SHORT).show()
+
+                    navHostController.navigate("home") {
+                        popUpTo(0) // Clears back stack
+                        launchSingleTop = true
+                    }
+                } else {
+                    Toast.makeText(context, "Wrong password", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(context, "User not found", Toast.LENGTH_SHORT).show()
+            }
+            onComplete()
+        }
+        .addOnFailureListener {
+            Toast.makeText(context, "Login failed. Try again.", Toast.LENGTH_SHORT).show()
+            onComplete()
+        }
 }
 
 @Composable
@@ -196,10 +219,8 @@ fun TransparentTextField(
     placeholder: String,
     isNumberKeyboard: Boolean = false,
     isPassword: Boolean = false,
-    icon: ImageVector,
+    icon: ImageVector
 ) {
-    var isEditing by remember { mutableStateOf(true) }
-    var passwordVisible by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -207,17 +228,13 @@ fun TransparentTextField(
             .padding(10.dp)
     ) {
         BasicTextField(
-            readOnly = !isEditing,
             value = value,
             onValueChange = onValueChange,
             singleLine = true,
-            textStyle = TextStyle(
-                color = Color.Gray,
-                fontSize = 16.sp
-            ), keyboardOptions = KeyboardOptions(
+            textStyle = TextStyle(color = Color.Gray, fontSize = 16.sp),
+            keyboardOptions = KeyboardOptions(
                 keyboardType = if (isNumberKeyboard) KeyboardType.Number else KeyboardType.Text
             ),
-
             decorationBox = { innerTextField ->
                 Column {
                     Row(
@@ -233,25 +250,18 @@ fun TransparentTextField(
                             modifier = Modifier.size(24.dp)
                         )
 
-                        Spacer(modifier = Modifier.size(8.dp)) // Space between icon and text
+                        Spacer(modifier = Modifier.size(8.dp))
 
                         Box(modifier = Modifier.weight(1f)) {
                             if (value.isEmpty()) {
-                                Text(
-                                    text = placeholder,
-                                    color = Color.Gray,
-                                    fontSize = 16.sp
-                                )
+                                Text(text = placeholder, color = Color.Gray, fontSize = 16.sp)
                             }
                             innerTextField()
                         }
-
                     }
                     Divider()
                 }
-
             }
-
         )
     }
 }

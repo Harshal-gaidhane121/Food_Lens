@@ -4,6 +4,7 @@ package com.example.foodlens.screens
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +22,9 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
@@ -30,8 +33,11 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -61,19 +67,20 @@ import com.example.foodlens.R
 import com.example.foodlens.User
 import com.example.foodlens.UserViewModel
 import com.example.foodlens.UserViewModelFactory
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
-fun Register(navHostController: NavHostController, userViewModel: UserViewModel = viewModel()) {
+fun Register(navHostController: NavHostController) {
     var mobileNo by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
+    var selectedGender by remember { mutableStateOf("") }
+
     val context = LocalContext.current
 
-
-    // This will handle the result of registration attempt
-    val registrationStatus = remember { mutableStateOf(false) }
+    val firestore = FirebaseFirestore.getInstance()
 
     Image(
         painter = painterResource(R.drawable.background2),
@@ -104,6 +111,12 @@ fun Register(navHostController: NavHostController, userViewModel: UserViewModel 
             onValueChange = { name = it },
             placeholder = "Name",
             icon = Icons.Default.Person
+        )
+
+        TransparentGenderDropdown(
+            selectedGender = selectedGender,
+            onGenderSelected = { selectedGender = it },
+            icon = Icons.Default.Person // You can replace this with any other icon
         )
 
         TransparentTextField(
@@ -139,40 +152,45 @@ fun Register(navHostController: NavHostController, userViewModel: UserViewModel 
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(Color.Transparent),
             onClick = {
-                if (mobileNo.isEmpty() || email.isEmpty() || password.isEmpty() || name.isEmpty()) {
+                if (mobileNo.isEmpty() || email.isEmpty() || password.isEmpty() || name.isEmpty() || selectedGender.isEmpty()) {
                     Toast.makeText(context, "Incomplete credentials", Toast.LENGTH_SHORT).show()
-                }
-                else if (mobileNo.length < 10) {
+                } else if (mobileNo.length < 10) {
                     Toast.makeText(context, "Invalid mobile number", Toast.LENGTH_SHORT).show()
-                }else {
-                    // Check if mobile number already exists
-                    userViewModel.isMobileRegistered(mobileNo) { exists ->
-                        if (exists) {
-                            Toast.makeText(context, "Mobile number already exists!", Toast.LENGTH_SHORT).show()
-                        } else {
-                            // Register user in database
-                            val user = User(
-                                name = name,
-                                email = email,
-                                mobile = mobileNo,
-                                password = password
-                            )
-                            userViewModel.registerUser(user) {
-                                registrationStatus.value = it
-                                if (it) {
-                                    navHostController.navigate("loginPage"){
-                                        popUpTo("loginPage"){
-                                            inclusive=true
+                } else {
+                    // Check if mobile number is already registered
+                    firestore.collection("Users")
+                        .whereEqualTo("mobile", mobileNo)
+                        .get()
+                        .addOnSuccessListener { documents ->
+                            if (!documents.isEmpty) {
+                                Toast.makeText(context, "Mobile number already exists!", Toast.LENGTH_SHORT).show()
+                            } else {
+                                // Register new user in Firestore
+                                val user = hashMapOf(
+                                    "name" to name,
+                                    "gender" to selectedGender,
+                                    "email" to email,
+                                    "mobile" to mobileNo,
+                                    "password" to password
+                                )
+
+                                firestore.collection("Users")
+                                    .document(mobileNo) // Use mobile number as unique ID
+                                    .set(user)
+                                    .addOnSuccessListener {
+                                        Toast.makeText(context, "Registered Successfully", Toast.LENGTH_SHORT).show()
+                                        navHostController.navigate("loginPage") {
+                                            popUpTo("loginPage") { inclusive = true }
                                         }
                                     }
-                                } else {
-                                    errorMessage = "Registration failed"
-                                }
+                                    .addOnFailureListener { e ->
+                                        errorMessage = "Registration failed: ${e.message}"
+                                    }
                             }
-                            Toast.makeText(context, "Registered", Toast.LENGTH_SHORT).show()
-
                         }
-                    }
+                        .addOnFailureListener { e ->
+                            errorMessage = "Error checking mobile number: ${e.message}"
+                        }
                 }
             }
         ) {
@@ -198,17 +216,91 @@ fun Register(navHostController: NavHostController, userViewModel: UserViewModel 
             Text(text = "Already have an account?", color = Color(1, 1, 1, 122))
 
             TextButton(
-                onClick = { navHostController.navigate("loginPage"){
-                    popUpTo("register"){
-                        inclusive=true
+                onClick = {
+                    navHostController.navigate("loginPage") {
+                        popUpTo("register") { inclusive = true }
                     }
-                } },
+                },
                 contentPadding = PaddingValues(0.dp),
                 modifier = Modifier.padding(0.dp)
             ) {
                 Text(
                     text = "Login",
                     color = colorResource(R.color.green),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun TransparentGenderDropdown(
+    selectedGender: String,
+    onGenderSelected: (String) -> Unit,
+    icon: ImageVector
+) {
+    val genderOptions = listOf("Male", "Female")
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Transparent)
+            .padding(10.dp)
+    ) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 7.dp)
+                    .clickable { expanded = true },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(
+                        if(selectedGender=="Female") R.drawable.girl
+                    else if(selectedGender=="Male")  R.drawable.boy
+                    else R.drawable.gender)
+                    ,
+                    contentDescription = null,
+                    tint = Color.Gray,
+                    modifier = Modifier.size(24.dp)
+                )
+
+                Spacer(modifier = Modifier.size(8.dp))
+
+                Box(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = selectedGender.ifEmpty { "Select Gender" },
+                        color =  Color.Gray ,
+                        fontSize = 16.sp
+                    )
+                }
+
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "Dropdown Arrow",
+                    tint = Color.Gray
+                )
+            }
+
+            Divider()
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxWidth(.85f)
+        ) {
+            genderOptions.forEach { gender ->
+                DropdownMenuItem(
+                    text = { Text(gender, color = Color.Gray) },
+                    onClick = {
+                        onGenderSelected(gender)
+                        expanded = false
+                    }
                 )
             }
         }

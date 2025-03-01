@@ -118,7 +118,7 @@ fun ProfilePage(navHostController: NavHostController) {
                                 style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.SemiBold)
                             )
                             LogoutButton(
-                                navHostController
+                                navHostController,context
                             )
                         }
 
@@ -212,7 +212,7 @@ fun ProfileField(label: String, value: String, onValueChange: (String) -> Unit, 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LogoutButton(navHostController: NavHostController) {
+fun LogoutButton(navHostController: NavHostController,context: Context) {
 
     var showLogoutDialog by remember { mutableStateOf(false) }
 
@@ -236,10 +236,13 @@ fun LogoutButton(navHostController: NavHostController) {
                     colors = ButtonDefaults.buttonColors(colorResource(R.color.lightGreen)),
                     onClick = {
                         showLogoutDialog = false
-                        navHostController.navigate("loginPage")
 
-                        //TODO logout
+                        context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+                            .edit().putBoolean("isLoggedIn", false).apply()
 
+                        navHostController.navigate("loginPage"){
+                            popUpTo(0)
+                        }
                     }) {
                     Text("Yes")
                 }

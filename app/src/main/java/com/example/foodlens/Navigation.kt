@@ -26,15 +26,15 @@ fun Navigation(navController: NavController,context: Context) {
     val userViewModel: UserViewModel = viewModel(
         factory = UserViewModelFactory(context) // Pass the factory
     )
-    val startDestination = if (isLoggedIn) "profile" else "getStarted"
+    val startDestination = if (isLoggedIn) "home" else "getStarted"
 
     NavHost(
         navController = navController as? NavHostController ?: return,
         startDestination = startDestination,
     ) {
         composable("getStarted") { GetStarted(navController) }
-        composable("loginPage") { LoginPage(navController, userViewModel) }
-        composable("register") { Register(navController, userViewModel) }
+        composable("loginPage") { LoginPage(navController) }
+        composable("register") { Register(navController,) }
         composable("home") { Home(navController,userViewModel) }
         composable("search") { SearchScreen(navController) }
         composable("profile") { ProfilePage(navController) }
