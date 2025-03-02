@@ -11,6 +11,8 @@
     <color name="lightGreen">#bcedd4</color>
     <color name="background"> #c9c9c0</color>
     <color name="red">#ff4b4c</color>
-    <color name="yellow">#fea400</color>
+    <color name="yellow">#FFFFC20E</color>
     <color name="lightGrey">#D1E7DFED</color>
+    <color name="orange">#FFFF8C00</color>
 </resources>
+

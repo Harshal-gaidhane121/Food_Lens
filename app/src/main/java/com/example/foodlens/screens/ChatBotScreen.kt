@@ -72,7 +72,6 @@ fun ChatBotScreen(viewModel: UserViewModel) {
                     .background(Color.LightGray)
             )
 
-            // After greeting is shown, mark it as shown in the ViewModel
             LaunchedEffect(Unit) {
                 delay(3000)
                 viewModel.markGreetingAsShown()
