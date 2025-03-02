@@ -1,5 +1,6 @@
 package com.example.foodlens.screens
 
+import ChatBotScreen
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
@@ -93,7 +94,8 @@ fun Home(navHostController: NavHostController, viewModel: UserViewModel) {
         Image(
             painter = painterResource(R.drawable.background),
             contentDescription = null,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
         )
 
 //        TopBar()
@@ -105,7 +107,7 @@ fun Home(navHostController: NavHostController, viewModel: UserViewModel) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 40.dp, top = 20.dp, start = 15.dp, end = 15.dp),
+                .padding(bottom = 40.dp,start = 15.dp, end = 15.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
@@ -165,7 +167,10 @@ fun Home(navHostController: NavHostController, viewModel: UserViewModel) {
 
         }
 
+        ChatBotScreen(viewModel)
+
         FloatingBottomNavigation(navHostController)
+
 
         ExitDialogBox(context)
 

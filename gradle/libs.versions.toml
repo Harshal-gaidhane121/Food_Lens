@@ -19,6 +19,7 @@ googleGmsGoogleServices = "4.4.2"
 firebaseFirestore = "25.1.2"
 ui = "1.7.8"
 uiToolingPreview = "1.7.8"
+browser = "1.8.0"
 
 [libraries]
 androidx-activity-activity-compose-v180-x2 = { module = "androidx.activity:activity-compose", version.ref = "androidxActivityActivityCompose" }
@@ -47,6 +48,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
+androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

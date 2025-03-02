@@ -1,5 +1,6 @@
 package com.example.foodlens.screens
 
+import ChatBotScreen
 import android.app.Activity
 import android.content.Context
 import androidx.activity.compose.BackHandler
@@ -62,9 +63,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.foodlens.FloatingBottomNavigation
 import com.example.foodlens.R
+import com.example.foodlens.UserViewModel
 
 @Composable
-fun ProfilePage(navHostController: NavHostController) {
+fun ProfilePage(navHostController: NavHostController,viewModel: UserViewModel) {
 
     var isEditing by remember { mutableStateOf(false) }
 
@@ -86,7 +88,7 @@ fun ProfilePage(navHostController: NavHostController) {
 
     Box(modifier = Modifier
         .fillMaxSize()
-        .padding(top = 20.dp),
+        .padding(top = 30.dp),
         contentAlignment = Alignment.Center){
 
         Image(
@@ -155,6 +157,8 @@ fun ProfilePage(navHostController: NavHostController) {
                 }
             }
         }
+
+        ChatBotScreen(viewModel = viewModel )
 
         FloatingBottomNavigation(navHostController)
     }

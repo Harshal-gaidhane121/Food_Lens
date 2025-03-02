@@ -1,5 +1,6 @@
 package com.example.foodlens.screens
 
+import ChatBotScreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,9 +12,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.foodlens.FloatingBottomNavigation
 import com.example.foodlens.R
+import com.example.foodlens.UserViewModel
 
 @Composable
-fun SearchScreen(navHostController: NavHostController) {
+fun SearchScreen(navHostController: NavHostController,viewModel: UserViewModel) {
 
 
     Box(modifier = Modifier.fillMaxSize()){
@@ -24,6 +26,8 @@ fun SearchScreen(navHostController: NavHostController) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
+
+        ChatBotScreen(viewModel)
 
         FloatingBottomNavigation(navHostController)
     }

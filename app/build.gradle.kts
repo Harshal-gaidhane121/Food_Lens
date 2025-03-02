@@ -48,6 +48,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.firebase.firestore)
+    implementation(libs.androidx.browser)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.navigation.compose.v275)
     implementation (libs.androidx.core.ktx.v170)

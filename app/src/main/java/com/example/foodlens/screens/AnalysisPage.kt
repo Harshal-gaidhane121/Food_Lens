@@ -77,27 +77,7 @@ fun AnalysisPage(name: String, value:Float, navHostController: NavHostController
             }
 
             item{
-                Card(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp)
-                    .size(100.dp),
-                    colors = CardDefaults.cardColors(Color.White),
-                    elevation = CardDefaults.cardElevation(10.dp)
-                )
-                {
                     NutritionItem("Energy",8f)
-                }
-
-                Card(modifier = Modifier
-                    .padding(20.dp)
-                    .fillMaxWidth()
-                    .wrapContentSize(),
-                    colors = CardDefaults.cardColors(Color.White),
-                    elevation = CardDefaults.cardElevation(10.dp),
-                )
-                {
-
-                }
 
             }
         }
@@ -272,9 +252,16 @@ fun RatingMeter(
 @Composable
 fun NutritionItem(item : String, rating: Float) {
 
-    Card(modifier = Modifier.fillMaxWidth().size(80.dp)) {
+    Card(modifier = Modifier.fillMaxWidth()
+        .wrapContentHeight()
+        .size(80.dp),
+        elevation = CardDefaults.cardElevation(10.dp),
+        colors =CardDefaults.cardColors(Color.White),
 
-        Text(text=item)
+    ) {
+
+        Text(text=item, color = Color.Gray)
+        
         RatingMeter(rating)
     }
     

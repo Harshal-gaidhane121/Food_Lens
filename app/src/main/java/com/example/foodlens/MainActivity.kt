@@ -27,11 +27,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             val context = LocalContext.current
             FoodLensTheme {
+
                 val controller: NavController = rememberNavController()
 
                 Navigation(
                     navController = controller, context = context
                 )
+
             }
         }
     }
