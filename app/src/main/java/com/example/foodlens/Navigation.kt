@@ -26,7 +26,7 @@ fun Navigation(navController: NavController,context: Context) {
     val userViewModel: UserViewModel = viewModel(
         factory = UserViewModelFactory(context) // Pass the factory
     )
-    val startDestination = if (isLoggedIn) "analysisPage" else "getStarted"
+    val startDestination = if (isLoggedIn) "home" else "getStarted"
 
     NavHost(
         navController = navController as? NavHostController ?: return,

@@ -32,6 +32,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -408,7 +409,7 @@ fun Conclusion(item: String, description: String) {
                     }
                 }
             },
-        colors = CardDefaults.cardColors(Color.White)
+        colors = CardDefaults.cardColors(Color(236, 235, 235, 128))
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -445,10 +446,17 @@ fun Conclusion(item: String, description: String) {
                         }
                     }
                 }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = null
-                    )
+                    if (expanded) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowUp,
+                            contentDescription = null
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = null
+                        )
+                    }
                 }
             }
 
@@ -460,25 +468,37 @@ fun Conclusion(item: String, description: String) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color.White)
-                        .padding(10.dp)
+                        .padding(20.dp)
                 ) {
-                    Text(text = description, color = Color.Black)
+                    Text(
+                        text = description,
+                        color = Color.Black,
+                        textAlign = TextAlign.Justify,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             }
         }
     }
 }
 
-@Preview(showSystemUi = true)
 @Composable
 fun SuggestionsInAnalysis() {
 
-    Card(modifier = Modifier.wrapContentSize().padding(top = 20.dp),
+    Card(
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(top = 20.dp),
         colors = CardDefaults.cardColors(Color.White),
-        ) {
+    ) {
 
         Column() {
-            Text(text = "Suggested Food Items", fontWeight = FontWeight.SemiBold, fontSize = 24.sp, modifier = Modifier.padding(10.dp))
+            Text(
+                text = "Suggested Food Items",
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 24.sp,
+                modifier = Modifier.padding(10.dp)
+            )
 
             SuggestedItems("Banana", "Banana is considered healthy depending on your health issues")
             SuggestedItems("Banana", "Banana is considered healthy depending on your health issues")
@@ -491,7 +511,9 @@ fun SuggestionsInAnalysis() {
 @Composable
 fun SuggestedItems(item: String, description: String) {
 
-    Column(modifier = Modifier.fillMaxWidth().padding(10.dp)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(10.dp)) {
         Text(
             text = item,
             fontWeight = FontWeight.Bold,

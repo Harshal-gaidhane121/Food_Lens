@@ -42,6 +42,9 @@ android {
 }
 
 dependencies {
+
+    implementation(libs.coil.compose)
+
     implementation(libs.androidx.compose.bom.v20240200)
     implementation("androidx.webkit:webkit:1.8.0")
 // Room
