@@ -12,6 +12,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -63,7 +65,7 @@ fun AnalysisPage(name: String, value: Float, navHostController: NavHostControlle
                         .fillMaxWidth()
                         .size(350.dp),
                     colors = CardDefaults.cardColors(Color.White),
-                    elevation = CardDefaults.cardElevation(10.dp)
+                    elevation = CardDefaults.cardElevation(5.dp)
                 )
                 {
                     Box(
@@ -93,6 +95,7 @@ fun AnalysisPage(name: String, value: Float, navHostController: NavHostControlle
                 }
             }
             item {
+                Spacer(modifier = Modifier.height(15.dp))
                 WhatIsItUpTo("What Concerns Us", R.drawable.shocked)
                 NutritionItem("Energy", 2f, "Energy levels are high which can cause weight gain ")
                 NutritionItem("Sugar", 2f, "Energy levels are high which can cause weight gain ")
@@ -188,7 +191,7 @@ fun AboutColor() {
             AboutColorItem("Healthy", colorResource(R.color.green))
             AboutColorItem("Neutral", colorResource(R.color.yellow))
             AboutColorItem("Unhealthy", colorResource(R.color.orange))
-            AboutColorItem("Unhealthy", colorResource(R.color.red))
+            AboutColorItem("Harmfull", colorResource(R.color.red))
 
 
         }
@@ -315,7 +318,7 @@ fun NutritionItem(item: String, rating: Float, description: String) {
             .padding(top = 10.dp, bottom = if (expanded) 10.dp else 0.dp)
             .fillMaxWidth()
             .wrapContentSize(),
-        colors = CardDefaults.cardColors(Color(236, 235, 235, 128))
+        colors = CardDefaults.cardColors(Color(236, 235, 235, 75))
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -378,12 +381,12 @@ fun WhatIsItUpTo(title: String, emoji: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp)
-            .height(40.dp),
+            .padding(12.dp)
+            .height(30.dp),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = title, fontWeight = FontWeight.SemiBold, fontSize = 24.sp)
+        Text(text = title, fontWeight = FontWeight.SemiBold, fontSize = 22.sp)
         Spacer(modifier = Modifier.size(7.dp))
         Image(painter = painterResource(emoji), contentDescription = null)
     }
@@ -484,6 +487,12 @@ fun Conclusion(item: String, description: String) {
 
 @Composable
 fun SuggestionsInAnalysis() {
+    val list = listOf(
+        SuggestedItems("Banana", "Banana is considered healthy depending on your health issues"),
+        SuggestedItems("Mango", "Mango is considered healthy depending on your health issues"),
+        SuggestedItems("Apple", "Apple is considered healthy depending on your health issues"),
+        SuggestedItems("Pineapple", "Pineapple is considered healthy depending on your health issues")
+    )
 
     Card(
         modifier = Modifier
@@ -491,8 +500,7 @@ fun SuggestionsInAnalysis() {
             .padding(top = 20.dp),
         colors = CardDefaults.cardColors(Color.White),
     ) {
-
-        Column() {
+        Column {
             Text(
                 text = "Suggested Food Items",
                 fontWeight = FontWeight.SemiBold,
@@ -500,28 +508,33 @@ fun SuggestionsInAnalysis() {
                 modifier = Modifier.padding(10.dp)
             )
 
-            SuggestedItems("Banana", "Banana is considered healthy depending on your health issues")
-            SuggestedItems("Banana", "Banana is considered healthy depending on your health issues")
-            SuggestedItems("Banana", "Banana is considered healthy depending on your health issues")
-            SuggestedItems("Banana", "Banana is considered healthy depending on your health issues")
+            LazyRow(
+                modifier = Modifier.padding()
+            ) {
+                items(list) { item ->
+                    SuggestedFoodCard(item)
+                }
+            }
+
         }
     }
 }
 
 @Composable
-fun SuggestedItems(item: String, description: String) {
-
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(10.dp)) {
-        Text(
-            text = item,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
-        )
-
-        Text(text = description)
-
+fun SuggestedFoodCard(item: SuggestedItems) {
+    Card(
+        modifier = Modifier.width(300.dp)
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(Color(0xFFF5F5F5)),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(10.dp)
+        ) {
+            Text(text = item.name, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Text(text = item.description, fontSize = 12.sp)
+        }
     }
-
 }
+
+data class SuggestedItems(val name: String, val description: String)

@@ -158,8 +158,6 @@ fun ProfilePage(navHostController: NavHostController,viewModel: UserViewModel) {
             }
         }
 
-        ChatBotScreen(viewModel = viewModel )
-
         FloatingBottomNavigation(navHostController)
     }
 

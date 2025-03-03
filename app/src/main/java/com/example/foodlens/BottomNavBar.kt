@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,8 +26,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun FloatingBottomNavigation(navHostController: NavHostController) {
-    val items = listOf("home", "search","about", "profile",)
-    val icons = listOf(Icons.Default.Home, Icons.Default.Search,Icons.Default.Notifications, Icons.Default.Person)
+    val items = listOf("home", "search","suggestion", "profile",)
+    val icons = listOf(Icons.Default.Home, Icons.Default.Search,Icons.Default.ThumbUp, Icons.Default.Person)
 
     // Track current destination
     val currentDestination by navHostController.currentBackStackEntryAsState()

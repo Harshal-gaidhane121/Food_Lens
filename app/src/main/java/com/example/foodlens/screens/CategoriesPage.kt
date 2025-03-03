@@ -26,12 +26,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.foodlens.R
@@ -77,7 +79,6 @@ fun CategoriesPage(navHostController: NavHostController,viewModel: UserViewModel
                             rowItems.forEach { (imageRes, title) ->
                                 CategoryItem(navHostController,cat = title, drawable = imageRes)
                             }
-                            // If the last row has only one item, add an empty spacer
                             if (rowItems.size == 1) {
                                 Spacer(modifier = Modifier.weight(1f))
                             }
@@ -134,26 +135,31 @@ fun CategoryItem(navController: NavController, cat: String, drawable: Int) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Card(
-            modifier = Modifier.clickable {
-                navController.navigate("analysisPage")
-            }
-                .size(160.dp)
-                .padding(top =20.dp),
+            modifier = Modifier
+                .clickable {
+                    navController.navigate("analysisPage")
+                }
+                .size(180.dp)
+                .padding(top = 20.dp),
             elevation = CardDefaults.cardElevation(10.dp),
             shape = RoundedCornerShape(10.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
             Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Image(
                     painter = painterResource(id = drawable), contentDescription = cat,
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.scale(1.5f)
                 )
+                Text(text = cat, fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
             }
         }
-        Text(text = cat)
     }
 
 
