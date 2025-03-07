@@ -2,7 +2,6 @@ package com.example.foodlens
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -25,14 +24,15 @@ import com.example.foodlens.screens.UploadScreen
 import com.google.gson.Gson
 
 @Composable
-fun Navigation(navController: NavController,context: Context) {
-
+fun Navigation(navController: NavController, context: Context) {
     val sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
     val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false)
 
+    val languageManager = LocalLanguageManager.current
     val userViewModel: UserViewModel = viewModel(
-        factory = UserViewModelFactory(context) // Pass the factory
+        factory = UserViewModelFactory(context)
     )
+
     val startDestination = if (isLoggedIn) "home" else "getStarted"
 
     NavHost(
@@ -41,11 +41,11 @@ fun Navigation(navController: NavController,context: Context) {
     ) {
         composable("getStarted") { GetStarted(navController) }
         composable("loginPage") { LoginPage(navController) }
-        composable("register") { Register(navController,) }
-        composable("home") { Home(navController,userViewModel) }
+        composable("register") { Register(navController) }
+        composable("home") { Home(navController, userViewModel) }
         composable("search") { UploadScreen(navController, viewModel = userViewModel) }
-        composable("profile") { ProfilePage(navController,userViewModel) }
-        composable("categoriesPage"){ CategoriesPage(navController, userViewModel) }
+        composable("profile") { ProfilePage(navController, userViewModel) }
+        composable("categoriesPage") { CategoriesPage(navController, userViewModel) }
         composable(
             "analysisPage/{productName}",
             arguments = listOf(navArgument("productName") { type = NavType.StringType })
@@ -62,9 +62,6 @@ fun Navigation(navController: NavController,context: Context) {
             AnalysisPageImage(analysisResponse = analysisResponse, navHostController = navController)
         }
         composable("loadingPage") { LoadingScreen(navController) }
-        composable("suggestion") { SuggestionPage(navController, userViewModel)  }
+        composable("suggestion") { SuggestionPage(navController, userViewModel) }
     }
 }
-
-
-

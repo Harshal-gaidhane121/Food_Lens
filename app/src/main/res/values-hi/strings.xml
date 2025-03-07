@@ -1,24 +1,26 @@
-<?xml version="1.0" encoding="utf-8"?>
+
 <resources>
-    <string name="app_name">Food Lens</string>
+    <string name="app_name">FoodLens</string>
+    <string name="eat_healthy">स्वस्थ खाएं</string>
+    <string name="health_focus">अच्छा स्वास्थ्य बनाए रखना हर किसी का प्राथमिक ध्यान होना चाहिए</string>
+    <string name="get_started">शुरू करें</string>
+    <string name="english">अंग्रेजी</string>
+    <string name="hindi">हिंदी</string>
     <string name="register">रजिस्टर</string>
     <string name="name">नाम</string>
     <string name="email">ईमेल</string>
     <string name="mobile_no">मोबाइल नंबर</string>
     <string name="password">पासवर्ड</string>
+    <string name="incomplete_credentials">अपूर्ण क्रेडेंशियल्स</string>
+    <string name="invalid_mobile_number">अमान्य मोबाइल नंबर</string>
+    <string name="registration_failed">रजिस्ट्रेशन विफल</string>
+    <string name="error">त्रुटि</string>
+    <string name="already_have_account">क्या आपके पास पहले से खाता है?</string>
     <string name="select_gender">लिंग चुनें</string>
     <string name="male">पुरुष</string>
     <string name="female">महिला</string>
-    <string name="register_button">रजिस्टर करें</string>
-    <string name="already_have_account">पहले से ही एक खाता है?</string>
-    <string name="login">लॉगिन</string>
 
-    <!-- Error Messages -->
-    <string name="incomplete_credentials">अपूर्ण क्रेडेंशियल्स</string>
-    <string name="invalid_mobile_number">अमान्य मोबाइल नंबर</string>
-    <string name="registration_failed">पंजीकरण विफल</string>
-    <string name="error_occurred">Error: %1$s</string>
-    <string name="language">Language</string>
-    <string name="english">English</string>
-    <string name="hindi">हिन्दी</string>
+    <string name="login">लॉगिन</string>
+    <string name="login_failed">लॉगिन विफल</string>
+    <string name="no_account">कोई खाता नहीं है?</string>
 </resources>

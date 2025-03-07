@@ -1,21 +1,25 @@
 <resources>
-    <string name="app_name">Food Lens</string>
+    <string name="app_name">FoodLens</string>
+    <string name="eat_healthy">Eat Healthy</string>
+    <string name="health_focus">Maintaining good health should be the primary focus of everyone</string>
+    <string name="get_started">Get Started</string>
+    <string name="english">English</string>
+    <string name="hindi">Hindi</string>
     <string name="register">Register</string>
     <string name="name">Name</string>
     <string name="email">Email</string>
     <string name="mobile_no">Mobile No.</string>
     <string name="password">Password</string>
-    <string name="select_gender">Select Gender</string>
-    <string name="male">Male</string>
-    <string name="female">Female</string>
     <string name="incomplete_credentials">Incomplete credentials</string>
     <string name="invalid_mobile_number">Invalid mobile number</string>
     <string name="registration_failed">Registration failed</string>
+    <string name="error">Error</string>
     <string name="already_have_account">Already have an account?</string>
-    <string name="register_button">Register</string>
+    <string name="select_gender">Select Gender</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+
     <string name="login">Login</string>
-    <string name="error_occurred">Error: %1$s</string>
-    <string name="language">Language</string>
-    <string name="english">English</string>
-    <string name="hindi">हिन्दी</string>
+    <string name="login_failed">Login failed</string>
+    <string name="no_account">Don\'t have an account?</string>
 </resources>

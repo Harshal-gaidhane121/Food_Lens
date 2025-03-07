@@ -1,44 +1,20 @@
+
+
 package com.example.foodlens.screens
 
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,37 +23,37 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.foodlens.LocalLanguageManager
 import com.example.foodlens.R
-import com.example.foodlens.UserViewModel
-import com.example.foodlens.network.RetrofitClient
-import com.example.foodlens.networks.LoginApiService
 import com.example.foodlens.networks.LoginRequest
+import com.example.foodlens.network.RetrofitClient // Use RetrofitClient for login
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
-
+import org.json.JSONObject
 
 @Composable
 fun LoginPage(navHostController: NavHostController) {
-    var mobileNo by remember { mutableStateOf("") }
+    val languageManager = LocalLanguageManager.current
+    val currentLanguage = languageManager.currentLanguage
+
+    var mobile by remember { mutableStateOf("") } // Changed from email to mobile
     var password by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val apiService: LoginApiService = RetrofitClient.getApiService(context)
+    val apiService = RetrofitClient.getApiService(context) // Use RetrofitClient with context
 
     Image(
         painter = painterResource(R.drawable.background2),
-        contentDescription = "bg",
+        contentDescription = null,
         contentScale = ContentScale.Crop,
         modifier = Modifier.fillMaxSize()
     )
@@ -86,39 +62,32 @@ fun LoginPage(navHostController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(20.dp)
     ) {
-        Spacer(modifier = Modifier.height(160.dp))
+        Spacer(modifier = Modifier.height(120.dp))
 
         Text(
-            text = "Welcome Back",
+            text = stringResource(R.string.login),
             color = Color(70, 66, 66, 193),
             style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Normal),
-        )
-
-        Text(
-            text = "Sign in to continue",
-            color = Color(70, 66, 66, 79),
-            fontSize = 20.sp,
-            textAlign = TextAlign.Start
         )
 
         Spacer(modifier = Modifier.height(40.dp))
 
         TransparentTextField(
-            value = mobileNo,
-            onValueChange = { mobileNo = it },
-            placeholder = "Mobile No.",
-            isNumberKeyboard = true,
-            icon = Icons.Default.AccountBox
+            value = mobile,
+            onValueChange = { mobile = it },
+            placeholder = stringResource(R.string.mobile_no), // Updated to mobile_no
+            icon = Icons.Default.Phone,
+            isNumberKeyboard = true // Added for mobile input
         )
 
         TransparentTextField(
             value = password,
             onValueChange = { password = it },
-            placeholder = "Password",
+            placeholder = stringResource(R.string.password),
             icon = Icons.Default.Lock
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(80.dp))
 
         Button(
             modifier = Modifier
@@ -128,81 +97,81 @@ fun LoginPage(navHostController: NavHostController) {
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(Color.Transparent),
             onClick = {
-                if (mobileNo.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(context, "Incomplete credentials", Toast.LENGTH_SHORT).show()
+                if (mobile.isEmpty() || password.isEmpty()) {
+                    Toast.makeText(context, context.getString(R.string.incomplete_credentials), Toast.LENGTH_SHORT).show()
+                } else if (mobile.length < 10) {
+                    Toast.makeText(context, context.getString(R.string.invalid_mobile_number), Toast.LENGTH_SHORT).show()
                 } else {
-                    isLoading = true
                     coroutineScope.launch {
                         try {
-                            val request = LoginRequest(mobileNo, password)
+                            val request = LoginRequest(mobile, password)
                             val response = apiService.loginUser(request)
 
                             if (response.isSuccessful) {
                                 response.body()?.let { body ->
-                                    body.token?.let { token ->
-                                        // Store token
-                                        RetrofitClient.setToken(token)
-                                        saveToken(context, token)
-                                        saveCurrentUser(context, mobileNo)
-
-                                        context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-                                            .edit().putBoolean("isLoggedIn", true).apply()
-
-                                        Toast.makeText(context, body.message ?: "Login Successful!", Toast.LENGTH_SHORT).show()
+                                    if (body.message != null) {
+                                        Toast.makeText(context, body.message, Toast.LENGTH_SHORT).show()
+                                        // Save token if present
+                                        body.token?.let { RetrofitClient.setToken(it) }
                                         navHostController.navigate("home") {
-                                            popUpTo(0) { inclusive = true }
-                                            launchSingleTop = true
+                                            popUpTo("loginPage") { inclusive = true }
                                         }
                                     }
                                 }
                             } else {
-                                Toast.makeText(context, response.errorBody()?.string() ?: "Login failed", Toast.LENGTH_SHORT).show()
+                                val errorBody = response.errorBody()?.string()
+                                val errorMessage = if (!errorBody.isNullOrEmpty()) {
+                                    JSONObject(errorBody).getString("message")
+                                } else {
+                                    response.body()?.error ?: context.getString(R.string.login_failed)
+                                }
+                                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
                             }
                         } catch (e: Exception) {
-                            Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                        } finally {
-                            isLoading = false
+                            errorMessage = "${context.getString(R.string.error)}: ${e.message}"
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
             }
         ) {
-            Text(text = "Login", fontSize = 19.sp, color = Color.White)
+            Text(
+                text = stringResource(R.string.login),
+                fontSize = 19.sp,
+                color = Color.White
+            )
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        TextButton(onClick = { /* TODO: Handle forgot password */ }) {
-            Text(text = "Forget Password?", color = colorResource(R.color.green))
+        if (errorMessage.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(text = errorMessage, color = Color.Red)
         }
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(13.dp))
 
         Row(
-            horizontalArrangement = Arrangement.Start,
+            horizontalArrangement = Arrangement.spacedBy(0.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Don't have an account yet?", color = Color(1, 1, 1, 122))
+            Text(
+                text = stringResource(R.string.no_account),
+                color = Color(1, 1, 1, 122)
+            )
 
             TextButton(
-                contentPadding = PaddingValues(0.dp),
                 onClick = {
                     navHostController.navigate("register") {
                         popUpTo("loginPage") { inclusive = true }
                     }
-                }
+                },
+                contentPadding = PaddingValues(0.dp),
+                modifier = Modifier.padding(0.dp)
             ) {
-                Text(text = "Register", color = colorResource(R.color.green))
+                Text(
+                    text = stringResource(R.string.register),
+                    color = colorResource(R.color.green),
+                )
             }
-        }
-    }
-
-    if (isLoading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
         }
     }
 }

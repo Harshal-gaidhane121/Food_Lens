@@ -1,6 +1,5 @@
 package com.example.foodlens.screens
 
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -8,34 +7,45 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.*
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.foodlens.LocalLanguageManager
 import com.example.foodlens.R
-import com.example.foodlens.networks.*
+import com.example.foodlens.networks.RegisterRequest
+import com.example.foodlens.networks.RegisterRetrofitClient
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import setAppLocale
 
 @Composable
 fun Register(navHostController: NavHostController) {
+
+    val languageManager = LocalLanguageManager.current
+    val currentLanguage = languageManager.currentLanguage
+
     var mobileNo by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
     var selectedGender by remember { mutableStateOf("") }
-    var languageKey by remember { mutableStateOf(0) }
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -53,6 +63,7 @@ fun Register(navHostController: NavHostController) {
         modifier = Modifier.padding(20.dp)
     ) {
         ExitDialogBox(context)
+
         Spacer(modifier = Modifier.height(120.dp))
 
         Text(
@@ -97,10 +108,6 @@ fun Register(navHostController: NavHostController) {
             placeholder = stringResource(R.string.password),
             icon = Icons.Default.Lock
         )
-        key(languageKey) {  // This ensures recomposition when the language changes
-            ChangeLanguage()
-            // Other UI elements
-        }
 
         Spacer(modifier = Modifier.height(80.dp))
 
@@ -112,38 +119,40 @@ fun Register(navHostController: NavHostController) {
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(Color.Transparent),
             onClick = {
-//                if (mobileNo.isEmpty() || email.isEmpty() || password.isEmpty() || name.isEmpty() || selectedGender.isEmpty()) {
-//                    errorMessage = stringResource(R.string.incomplete_credentials)
-//                } else if (mobileNo.length < 10) {
-//                    errorMessage = stringResource(R.string.invalid_mobile_number)
-//                } else {
-//                    coroutineScope.launch {
-//                        try {
-//                            val request = RegisterRequest(name, gender = selectedGender, email, mobileNo, password)
-//                            val response = apiService.registerUser(request)
-//
-//                            if (response.isSuccessful) {
-//                                response.body()?.let { body ->
-//                                    body.message?.let {
-//                                        showToast(context, it)
-//                                        navHostController.navigate("loginPage") {
-//                                            popUpTo("loginPage") { inclusive = true }
-//                                        }
-//                                    }
-//                                }
-//                            } else {
-//                                val errorBody = response.errorBody()?.string()
-//                                errorMessage = if (!errorBody.isNullOrEmpty()) {
-//                                    JSONObject(errorBody).getString("message")
-//                                } else {
-//                                    stringResource(R.string.registration_failed)
-//                                }
-//                            }
-//                        } catch (e: Exception) {
-//                            errorMessage = stringResource(R.string.error_occurred, e.message ?: "Unknown error")
-//                        }
-//                    }
-//                }
+                if (mobileNo.isEmpty() || email.isEmpty() || password.isEmpty() || name.isEmpty() || selectedGender.isEmpty()) {
+                   Toast.makeText(context, context.getString(R.string.incomplete_credentials), Toast.LENGTH_SHORT).show()
+                } else if (mobileNo.length < 10) {
+                Toast.makeText(context, context.getString(R.string.invalid_mobile_number), Toast.LENGTH_SHORT).show()
+                } else {
+                    coroutineScope.launch {
+                        try {
+                            val request = RegisterRequest(name, gender = selectedGender, email, mobileNo, password)
+                            val response = apiService.registerUser(request)
+
+                            if (response.isSuccessful) {
+                                response.body()?.let { body ->
+                                    if (body.message != null) {
+                                        Toast.makeText(context, body.message, Toast.LENGTH_SHORT).show()
+                                        navHostController.navigate("loginPage") {
+                                            popUpTo("loginPage") { inclusive = true }
+                                        }
+                                    }
+                                }
+                            } else {
+                                val errorBody = response.errorBody()?.string()
+                                val errorMessage = if (!errorBody.isNullOrEmpty()) {
+                                    JSONObject(errorBody).getString("message")
+                                } else {
+                                    context.getString(R.string.registration_failed)
+                                }
+                                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                            }
+                        } catch (e: Exception) {
+                           errorMessage = "${context.getString(R.string.error)}: ${e.message}"
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             }
         ) {
             Text(
@@ -153,7 +162,6 @@ fun Register(navHostController: NavHostController) {
             )
         }
 
-        // Display error message if it exists
         if (errorMessage.isNotEmpty()) {
             Spacer(modifier = Modifier.height(10.dp))
             Text(text = errorMessage, color = Color.Red)
@@ -185,17 +193,16 @@ fun Register(navHostController: NavHostController) {
     }
 }
 
-fun showToast(context: Context, message: String) {
-    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-}
-
 @Composable
 fun TransparentGenderDropdown(
     selectedGender: String,
     onGenderSelected: (String) -> Unit,
     icon: ImageVector
 ) {
-    val genderOptions = listOf("Male", "Female")
+    val genderOptions = listOf(
+        stringResource(R.string.male),
+        stringResource(R.string.female)
+    )
     var expanded by remember { mutableStateOf(false) }
 
     Box(
@@ -214,8 +221,8 @@ fun TransparentGenderDropdown(
             ) {
                 Icon(
                     painter = painterResource(
-                        if (selectedGender == "Female") R.drawable.girl
-                        else if (selectedGender == "Male") R.drawable.boy
+                        if (selectedGender == stringResource(R.string.female)) R.drawable.girl
+                        else if (selectedGender == stringResource(R.string.male)) R.drawable.boy
                         else R.drawable.gender
                     ),
                     contentDescription = null,
@@ -227,7 +234,7 @@ fun TransparentGenderDropdown(
 
                 Box(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = selectedGender.ifEmpty { "Select Gender" },
+                        text = selectedGender.ifEmpty { stringResource(R.string.select_gender) },
                         color = Color.Gray,
                         fontSize = 16.sp
                     )
@@ -262,38 +269,3 @@ fun TransparentGenderDropdown(
         }
     }
 }
-
-@Composable
-fun ChangeLanguage() {
-    var expanded by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-    val englishText = stringResource(R.string.english)
-    val hindiText = stringResource(R.string.hindi)
-    var selectedLanguage by remember { mutableStateOf(englishText) }
-    var languageKey by remember { mutableStateOf(0) }  // Key to trigger recomposition
-
-    Box(modifier = Modifier.clickable { expanded = true }) {
-        Text(text = "Change Language")
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(
-                text = { Text(englishText) },
-                onClick = {
-                    setAppLocale(context, "en")
-                    selectedLanguage = englishText
-                    languageKey++  // Trigger recomposition
-                    expanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text(hindiText) },
-                onClick = {
-                    setAppLocale(context, "hi")
-                    selectedLanguage = hindiText
-                    languageKey++  // Trigger recomposition
-                    expanded = false
-                }
-            )
-        }
-    }
-}
-
