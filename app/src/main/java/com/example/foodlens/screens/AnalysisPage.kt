@@ -51,6 +51,7 @@ import com.example.foodlens.network.RetrofitClient
 import com.example.foodlens.networks.LoginApiService
 import com.example.foodlens.networks.ProductAnalysisResponse
 import com.example.foodlens.networks.SuggestedAlternative
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.min
 
@@ -135,7 +136,6 @@ fun AnalysisPage(productName: String, navHostController: NavHostController) {
                                     overflow = TextOverflow.Clip, // Optional: specifies how to handle overflow, Clip is default
                                     textAlign = TextAlign.Center
                                 )
-                                Text(text=data.overall_analysis.rating.toString(), fontSize = 30.sp)
 
                                 MeterArc(data.overall_analysis.rating.toFloat(), modifier = Modifier.scale(1.15f)) // Scale 1-5 to 1-10
                                 AboutColor()
@@ -455,26 +455,29 @@ fun WhatIsItUpTo(title: String, emoji: Int) {
 }
 
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun Conclusion(item: String, description: String) {
     var expanded by remember { mutableStateOf(false) }
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
     val coroutineScope = rememberCoroutineScope()
 
+    // Trigger bringIntoView only when expanded changes to true, with a small delay for layout stabilization
+    LaunchedEffect(expanded) {
+        if (expanded) {
+            coroutineScope.launch {
+                delay(100) // Small delay to ensure layout is fully measured
+                bringIntoViewRequester.bringIntoView() // Scroll to the requester
+            }
+        }
+    }
+
     Card(
+        colors = CardDefaults.cardColors((Color(236, 235, 235, 128))),
         modifier = Modifier
             .padding(top = 10.dp, bottom = if (expanded) 10.dp else 20.dp)
             .fillMaxWidth()
-            .wrapContentSize()
-            .onGloballyPositioned {
-                if (expanded) {
-                    coroutineScope.launch {
-                        bringIntoViewRequester.bringIntoView()
-                    }
-                }
-            },
-        colors = CardDefaults.cardColors(Color(236, 235, 235, 128))
+            .wrapContentHeight() // Use wrapContentHeight for better height control
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -483,19 +486,11 @@ fun Conclusion(item: String, description: String) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable {
-                        expanded = !expanded
-                        if (expanded) {
-                            coroutineScope.launch {
-                                bringIntoViewRequester.bringIntoView()
-                            }
-                        }
-                    }
+                    .clickable { expanded = !expanded }
                     .padding(5.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Text(
                     text = item,
                     color = Color.Black,
@@ -503,43 +498,34 @@ fun Conclusion(item: String, description: String) {
                     fontSize = 23.sp
                 )
 
-                IconButton(onClick = {
-                    expanded = !expanded
-                    if (expanded) {
-                        coroutineScope.launch {
-                            bringIntoViewRequester.bringIntoView()
-                        }
-                    }
-                }) {
-                    if (expanded) {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowUp,
-                            contentDescription = null
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = null
-                        )
-                    }
+                IconButton(onClick = { expanded = !expanded }) {
+                    Icon(
+                        imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = null
+                    )
                 }
             }
 
             AnimatedVisibility(
                 visible = expanded,
-                modifier = Modifier.bringIntoViewRequester(bringIntoViewRequester)
+                modifier = Modifier
+                    .bringIntoViewRequester(bringIntoViewRequester) // Attach requester to the expanded content
+                    .fillMaxWidth()
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color.White)
                         .padding(20.dp)
+                        .heightIn(max = 300.dp) // Increased max height for better visibility
+                        .verticalScroll(rememberScrollState()) // Allow internal scrolling
                 ) {
                     Text(
                         text = description,
                         color = Color.Black,
                         textAlign = TextAlign.Justify,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp
                     )
                 }
             }
