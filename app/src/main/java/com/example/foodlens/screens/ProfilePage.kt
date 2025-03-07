@@ -30,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -86,13 +87,21 @@ fun ProfilePage(navHostController: NavHostController, viewModel: UserViewModel) 
                         bloodGroup = profile.bloodGroup ?: ""
                     }
                 } else {
-                    Toast.makeText(context, "Failed to fetch profile: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.fetch_profile_failed, response.code()),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     if (response.code() == 401) {
                         navHostController.navigate("loginPage") { popUpTo(0) { inclusive = true } }
                     }
                 }
             } catch (e: Exception) {
-                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.error) + ": ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             } finally {
                 isLoading = false
             }
@@ -117,16 +126,24 @@ fun ProfilePage(navHostController: NavHostController, viewModel: UserViewModel) 
                 )
                 val response = apiService.updateUserProfile(request) // Use apiService instance
                 if (response.isSuccessful) {
-                    Toast.makeText(context, response.body()?.message ?: "Profile updated", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,  context.getString(R.string.profile_updated), Toast.LENGTH_SHORT).show()
                     isEditing = false
                 } else {
-                    Toast.makeText(context, "Failed to update profile: ${response.code()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.update_profile_failed, response.code()),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     if (response.code() == 401) {
                         navHostController.navigate("loginPage") { popUpTo(0) { inclusive = true } }
                     }
                 }
             } catch (e: Exception) {
-                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.error) + ": ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -171,7 +188,7 @@ fun ProfilePage(navHostController: NavHostController, viewModel: UserViewModel) 
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = "Profile",
+                                    text = stringResource(R.string.profile),
                                     color = Color(54, 54, 54, 191),
                                     style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.SemiBold)
                                 )
@@ -181,16 +198,16 @@ fun ProfilePage(navHostController: NavHostController, viewModel: UserViewModel) 
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        ProfileField("Name", name, { name = it }, isEditing, Icons.Default.Person)
-                        ProfileField("Mobile No", mobile, { mobile = it }, isEditing, Icons.Default.Phone)
-                        ProfileField("Gender", gender, { gender = it }, isEditing, Icons.Default.Lock)
-                        ProfileField("Email", email, { email = it }, isEditing, Icons.Default.Email)
-                        ProfileField("Age", age, { age = it }, isEditing, Icons.Default.Info)
-                        ProfileField("Height(cm)", height, { height = it }, isEditing, Icons.Default.Info)
-                        ProfileField("Weight(kg)", weight, { weight = it }, isEditing, Icons.Default.Info)
-                        ProfileField("Medical History", medicalHistory, { medicalHistory = it }, isEditing, Icons.Default.Info)
-                        ProfileField("Allergies", allergies, { allergies = it }, isEditing, Icons.Default.Warning)
-                        ProfileField("Blood Group", bloodGroup, { bloodGroup = it }, isEditing, Icons.Default.Info)
+                        ProfileField(stringResource(R.string.name), name, { name = it }, isEditing, Icons.Default.Person)
+                        ProfileField(stringResource(R.string.mobile_no), mobile, { mobile = it }, isEditing, Icons.Default.Phone)
+                        ProfileField(stringResource(R.string.gender), gender, { gender = it }, isEditing, Icons.Default.Lock)
+                        ProfileField(stringResource(R.string.email), email, { email = it }, isEditing, Icons.Default.Email)
+                        ProfileField(stringResource(R.string.age), age, { age = it }, isEditing, Icons.Default.Info)
+                        ProfileField(stringResource(R.string.height_cm), height, { height = it }, isEditing, Icons.Default.Info)
+                        ProfileField(stringResource(R.string.weight_kg), weight, { weight = it }, isEditing, Icons.Default.Info)
+                        ProfileField(stringResource(R.string.medical_history), medicalHistory, { medicalHistory = it }, isEditing, Icons.Default.Info)
+                        ProfileField(stringResource(R.string.allergies), allergies, { allergies = it }, isEditing, Icons.Default.Warning)
+                        ProfileField(stringResource(R.string.blood_group), bloodGroup, { bloodGroup = it }, isEditing, Icons.Default.Info)
 
                         Spacer(modifier = Modifier.height(15.dp))
 
@@ -203,7 +220,7 @@ fun ProfilePage(navHostController: NavHostController, viewModel: UserViewModel) 
                             colors = if (!isEditing) ButtonDefaults.buttonColors(Color.Gray) else ButtonDefaults.buttonColors(Color.Black)
                         ) {
                             Text(
-                                text = if (isEditing) "Save" else "Edit",
+                                text = stringResource(if (isEditing) R.string.save else R.string.edit),
                                 color = Color.White
                             )
                         }
@@ -214,7 +231,7 @@ fun ProfilePage(navHostController: NavHostController, viewModel: UserViewModel) 
             }
         }
 
-        ChatBotScreen(viewModel = viewModel )
+        ChatBotScreen(viewModel = viewModel)
         FloatingBottomNavigation(navHostController)
     }
 }
@@ -247,7 +264,7 @@ fun ProfileField(
                     unfocusedBorderColor = Color.Black
                 ),
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = if (label == "Age" || label == "Height(cm)" || label == "Weight(kg)") KeyboardType.Number else KeyboardType.Text
+                    keyboardType = if (label == stringResource(R.string.age) || label == stringResource(R.string.height_cm) || label == stringResource(R.string.weight_kg)) KeyboardType.Number else KeyboardType.Text
                 )
             )
         } else {
@@ -282,7 +299,7 @@ fun LogoutButton(navHostController: NavHostController, context: Context) {
     ) {
         Icon(
             painter = painterResource(R.drawable.logout),
-            contentDescription = "Logout Button",
+            contentDescription = stringResource(R.string.logout),
             tint = Color.Gray,
             modifier = Modifier.scale(1.2f)
         )
@@ -292,8 +309,8 @@ fun LogoutButton(navHostController: NavHostController, context: Context) {
         AlertDialog(
             containerColor = Color.White,
             onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Logout", color = Color(1, 1, 1)) },
-            text = { Text("Are you sure you want to logout?", color = Color(1, 1, 1)) },
+            title = { Text(stringResource(R.string.logout), color = Color(1, 1, 1)) },
+            text = { Text(stringResource(R.string.logout_confirmation), color = Color(1, 1, 1)) },
             confirmButton = {
                 Button(
                     colors = ButtonDefaults.buttonColors(colorResource(R.color.lightGreen)),
@@ -314,7 +331,7 @@ fun LogoutButton(navHostController: NavHostController, context: Context) {
                         }
                     }
                 ) {
-                    Text("Yes")
+                    Text(stringResource(R.string.yes))
                 }
             },
             dismissButton = {
@@ -322,7 +339,7 @@ fun LogoutButton(navHostController: NavHostController, context: Context) {
                     colors = ButtonDefaults.buttonColors(colorResource(R.color.lightGreen)),
                     onClick = { showLogoutDialog = false }
                 ) {
-                    Text("No")
+                    Text(stringResource(R.string.no))
                 }
             }
         )

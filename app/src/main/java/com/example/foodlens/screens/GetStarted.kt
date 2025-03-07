@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -24,7 +25,20 @@ import com.example.foodlens.R
 
 @Composable
 fun GetStarted(navHostController: NavHostController) {
+    val context= LocalContext.current
     val languageManager = LocalLanguageManager.current
+
+    // Sync selected language with LanguageManager's currentLanguage
+    val languages = listOf(
+        "en" to stringResource(R.string.english),
+        "hi" to stringResource(R.string.hindi)
+    )
+    var selectedLanguage by remember { mutableStateOf(languages.find { it.first == languageManager.currentLanguage }?.second ?: context.getString(R.string.english)) }
+
+    // Re-evaluate selectedLanguage when currentLanguage changes (e.g., after recreation)
+    LaunchedEffect(languageManager.currentLanguage) {
+        selectedLanguage = languages.find { it.first == languageManager.currentLanguage }?.second ?: context.getString(R.string.english)
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -85,28 +99,31 @@ fun GetStarted(navHostController: NavHostController) {
             }
         }
 
-
         LanguageDropdown(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 38.dp, bottom = 16.dp, start = 16.dp, end = 20.dp)
+                .padding(top = 38.dp, bottom = 16.dp, start = 16.dp, end = 20.dp),
+            selectedLanguage = selectedLanguage,
+            onLanguageSelected = { code, name ->
+                selectedLanguage = name
+                languageManager.setLanguage(code)
+            }
         )
     }
 }
 
 @Composable
-fun LanguageDropdown(modifier: Modifier = Modifier) {
+fun LanguageDropdown(
+    modifier: Modifier = Modifier,
+    selectedLanguage: String,
+    onLanguageSelected: (String, String) -> Unit
+) {
     val languageManager = LocalLanguageManager.current
     var expanded by remember { mutableStateOf(false) }
     val languages = listOf(
         "en" to stringResource(R.string.english),
         "hi" to stringResource(R.string.hindi)
     )
-    var selectedLanguage by remember {
-        mutableStateOf(
-            languages.find { it.first == languageManager.currentLanguage }?.second ?: "English"
-        )
-    }
 
     Box(modifier = modifier) {
         Button(
@@ -129,8 +146,7 @@ fun LanguageDropdown(modifier: Modifier = Modifier) {
                 DropdownMenuItem(
                     text = { Text(name, color = Color.Gray) },
                     onClick = {
-                        selectedLanguage = name
-                        languageManager.setLanguage(code)
+                        onLanguageSelected(code, name)
                         expanded = false
                     }
                 )

@@ -1,26 +1,61 @@
-
 <resources>
     <string name="app_name">FoodLens</string>
     <string name="eat_healthy">स्वस्थ खाएं</string>
-    <string name="health_focus">अच्छा स्वास्थ्य बनाए रखना हर किसी का प्राथमिक ध्यान होना चाहिए</string>
+    <string name="health_focus">अच्छे स्वास्थ्य को बनाए रखना हर व्यक्ति का प्राथमिक लक्ष्य होना चाहिए</string>
     <string name="get_started">शुरू करें</string>
-    <string name="english">अंग्रेजी</string>
+    <string name="english">English</string>
     <string name="hindi">हिंदी</string>
-    <string name="register">रजिस्टर</string>
+    <string name="register">रजिस्टर करें</string>
     <string name="name">नाम</string>
     <string name="email">ईमेल</string>
     <string name="mobile_no">मोबाइल नंबर</string>
     <string name="password">पासवर्ड</string>
-    <string name="incomplete_credentials">अपूर्ण क्रेडेंशियल्स</string>
-    <string name="invalid_mobile_number">अमान्य मोबाइल नंबर</string>
-    <string name="registration_failed">रजिस्ट्रेशन विफल</string>
+    <string name="incomplete_credentials">अधूरी जानकारी</string>
+    <string name="invalid_mobile_number">गलत मोबाइल नंबर</string>
+    <string name="registration_failed">रजिस्ट्रेशन विफल रहा</string>
     <string name="error">त्रुटि</string>
     <string name="already_have_account">क्या आपके पास पहले से खाता है?</string>
     <string name="select_gender">लिंग चुनें</string>
     <string name="male">पुरुष</string>
     <string name="female">महिला</string>
+    <string name="login">लॉगिन करें</string>
+    <string name="login_failed">लॉगिन विफल रहा</string>
+    <string name="no_account">क्या आपके पास खाता नहीं है?</string>
+    <string name="welcome">स्वागत है</string>
+    <string name="healthy_insights">स्वास्थ्य संबंधी जानकारी</string>
+    <string name="healthy_food_choice">स्वस्थ भोजन का चयन करें</string>
+    <string name="yes">हाँ</string>
+    <string name="no">नहीं</string>
+    <string name="exit_app">ऐप से बाहर निकलें</string>
+    <string name="exit_confirmation">क्या आप वाकई बाहर निकलना चाहते हैं?</string>
 
-    <string name="login">लॉगिन</string>
-    <string name="login_failed">लॉगिन विफल</string>
-    <string name="no_account">कोई खाता नहीं है?</string>
+    <string name="upload_and_analyze">अपलोड और विश्लेषण करें</string>
+    <string name="just_in_a_click">बस एक क्लिक में</string>
+    <string name="no_image">कोई छवि नहीं</string>
+    <string name="analyze">विश्लेषण करें</string>
+    <string name="take_photo">फोटो लें</string>
+    <string name="from_gallery">गैलरी से</string>
+    <string name="error_loading_image">छवि लोड करने में त्रुटि: %1$s</string>
+    <string name="no_analysis_data">कोई विश्लेषण डेटा प्राप्त नहीं हुआ</string>
+    <string name="analysis_failed">विश्लेषण विफल रहा: %1$d</string>
+    <string name="need_healthy_suggestion">क्या आपको स्वस्थ सुझाव चाहिए?</string>
+    <string name="no_recommendations">कोई सुझाव उपलब्ध नहीं</string>
+    <string name="fetch_recommendations_failed">सुझाव लाने में विफल: %1$d</string>
+
+    <!-- New strings for ProfilePage -->
+    <string name="profile">प्रोफ़ाइल</string>
+    <string name="edit">संपादित करें</string>
+    <string name="save">सहेजें</string>
+    <string name="logout">लॉगआउट</string>
+    <string name="logout_confirmation">क्या आप वाकई लॉगआउट करना चाहते हैं?</string>
+    <string name="fetch_profile_failed">प्रोफ़ाइल लाने में विफल: %1$d</string>
+    <string name="profile_updated">प्रोफ़ाइल अपडेट हो गई</string>
+    <string name="update_profile_failed">प्रोफ़ाइल अपडेट करने में विफल: %1$d</string>
+    <string name="age">आयु</string>
+    <string name="height_cm">लंबाई (सेमी)</string>
+    <string name="weight_kg">वजन (किलो)</string>
+    <string name="medical_history">चिकित्सा इतिहास</string>
+    <string name="allergies">एलर्जी</string>
+    <string name="blood_group">रक्त समूह</string>
+    <string name="gender">लिंग</string>
 </resources>
