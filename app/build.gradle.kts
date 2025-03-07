@@ -42,7 +42,6 @@ android {
 }
 
 dependencies {
-
 // integrate backend
     implementation(libs.retrofit)
     implementation(libs.converter.gson)

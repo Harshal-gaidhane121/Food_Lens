@@ -77,7 +77,7 @@ fun LoginPage(navHostController: NavHostController) {
 
     Image(
         painter = painterResource(R.drawable.background2),
-        contentDescription = null,
+        contentDescription = "bg",
         contentScale = ContentScale.Crop,
         modifier = Modifier.fillMaxSize()
     )

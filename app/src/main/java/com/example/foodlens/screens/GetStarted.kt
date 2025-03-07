@@ -92,6 +92,8 @@ fun GetStarted(navHostController: NavHostController) {
                         fontSize = 19.sp
                     )
                 }
+
+
             }
 
 

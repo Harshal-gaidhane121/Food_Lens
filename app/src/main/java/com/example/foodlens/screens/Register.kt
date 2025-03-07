@@ -1,60 +1,31 @@
 package com.example.foodlens.screens
 
-
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.foodlens.R
-import com.example.foodlens.networks.RegisterRequest
-import com.example.foodlens.networks.RegisterRetrofitClient
+import com.example.foodlens.networks.*
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import setAppLocale
 
 @Composable
 fun Register(navHostController: NavHostController) {
@@ -64,6 +35,7 @@ fun Register(navHostController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
     var selectedGender by remember { mutableStateOf("") }
+    var languageKey by remember { mutableStateOf(0) }
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -80,13 +52,11 @@ fun Register(navHostController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(20.dp)
     ) {
-
         ExitDialogBox(context)
-
         Spacer(modifier = Modifier.height(120.dp))
 
         Text(
-            text = "Register",
+            text = stringResource(R.string.register),
             color = Color(70, 66, 66, 193),
             style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.Normal),
         )
@@ -96,27 +66,27 @@ fun Register(navHostController: NavHostController) {
         TransparentTextField(
             value = name,
             onValueChange = { name = it },
-            placeholder = "Name",
+            placeholder = stringResource(R.string.name),
             icon = Icons.Default.Person
         )
 
         TransparentGenderDropdown(
             selectedGender = selectedGender,
             onGenderSelected = { selectedGender = it },
-            icon = Icons.Default.Person // You can replace this with any other icon
+            icon = Icons.Default.Person
         )
 
         TransparentTextField(
             value = email,
             onValueChange = { email = it },
-            placeholder = "Email",
+            placeholder = stringResource(R.string.email),
             icon = Icons.Default.Email
         )
 
         TransparentTextField(
             value = mobileNo,
             onValueChange = { mobileNo = it },
-            placeholder = "Mobile No.",
+            placeholder = stringResource(R.string.mobile_no),
             isNumberKeyboard = true,
             icon = Icons.Default.Phone
         )
@@ -124,13 +94,16 @@ fun Register(navHostController: NavHostController) {
         TransparentTextField(
             value = password,
             onValueChange = { password = it },
-            placeholder = "Password",
+            placeholder = stringResource(R.string.password),
             icon = Icons.Default.Lock
         )
+        key(languageKey) {  // This ensures recomposition when the language changes
+            ChangeLanguage()
+            // Other UI elements
+        }
 
         Spacer(modifier = Modifier.height(80.dp))
 
-        // Register button
         Button(
             modifier = Modifier
                 .height(60.dp)
@@ -139,50 +112,48 @@ fun Register(navHostController: NavHostController) {
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(Color.Transparent),
             onClick = {
-                if (mobileNo.isEmpty() || email.isEmpty() || password.isEmpty() || name.isEmpty() || selectedGender.isEmpty()) {
-                    Toast.makeText(context, "Incomplete credentials", Toast.LENGTH_SHORT).show()
-                } else if (mobileNo.length < 10) {
-                    Toast.makeText(context, "Invalid mobile number", Toast.LENGTH_SHORT).show()
-                } else {
-                    coroutineScope.launch {
-                        try {
-                            val request = RegisterRequest(name, gender=selectedGender, email, mobileNo, password)
-                            val response = apiService.registerUser(request)
-
-                            if (response.isSuccessful) {
-                                response.body()?.let { body ->
-                                    if (body.message != null) {
-                                        Toast.makeText(context, body.message, Toast.LENGTH_SHORT).show()
-                                        navHostController.navigate("loginPage") {
-                                            popUpTo("loginPage") { inclusive = true }
-                                        }
-                                    }
-                                }
-                            } else {
-                                val errorBody = response.errorBody()?.string()
-                                val errorMessage = if (!errorBody.isNullOrEmpty()) {
-                                    JSONObject(errorBody).getString("message")
-                                } else {
-                                    "Registration failed"
-                                }
-                                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-                            }
-                        } catch (e: Exception) {
-                            errorMessage = "Error: ${e.message}"
-                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
+//                if (mobileNo.isEmpty() || email.isEmpty() || password.isEmpty() || name.isEmpty() || selectedGender.isEmpty()) {
+//                    errorMessage = stringResource(R.string.incomplete_credentials)
+//                } else if (mobileNo.length < 10) {
+//                    errorMessage = stringResource(R.string.invalid_mobile_number)
+//                } else {
+//                    coroutineScope.launch {
+//                        try {
+//                            val request = RegisterRequest(name, gender = selectedGender, email, mobileNo, password)
+//                            val response = apiService.registerUser(request)
+//
+//                            if (response.isSuccessful) {
+//                                response.body()?.let { body ->
+//                                    body.message?.let {
+//                                        showToast(context, it)
+//                                        navHostController.navigate("loginPage") {
+//                                            popUpTo("loginPage") { inclusive = true }
+//                                        }
+//                                    }
+//                                }
+//                            } else {
+//                                val errorBody = response.errorBody()?.string()
+//                                errorMessage = if (!errorBody.isNullOrEmpty()) {
+//                                    JSONObject(errorBody).getString("message")
+//                                } else {
+//                                    stringResource(R.string.registration_failed)
+//                                }
+//                            }
+//                        } catch (e: Exception) {
+//                            errorMessage = stringResource(R.string.error_occurred, e.message ?: "Unknown error")
+//                        }
+//                    }
+//                }
             }
         ) {
             Text(
-                text = "Register",
+                text = stringResource(R.string.register),
                 fontSize = 19.sp,
                 color = Color.White
             )
         }
 
-        // Error message display
+        // Display error message if it exists
         if (errorMessage.isNotEmpty()) {
             Spacer(modifier = Modifier.height(10.dp))
             Text(text = errorMessage, color = Color.Red)
@@ -194,7 +165,7 @@ fun Register(navHostController: NavHostController) {
             horizontalArrangement = Arrangement.spacedBy(0.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Already have an account?", color = Color(1, 1, 1, 122))
+            Text(text = stringResource(R.string.already_have_account), color = Color(1, 1, 1, 122))
 
             TextButton(
                 onClick = {
@@ -206,12 +177,16 @@ fun Register(navHostController: NavHostController) {
                 modifier = Modifier.padding(0.dp)
             ) {
                 Text(
-                    text = "Login",
+                    text = stringResource(R.string.login),
                     color = colorResource(R.color.green),
                 )
             }
         }
     }
+}
+
+fun showToast(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 }
 
 @Composable
@@ -239,10 +214,10 @@ fun TransparentGenderDropdown(
             ) {
                 Icon(
                     painter = painterResource(
-                        if(selectedGender=="Female") R.drawable.girl
-                    else if(selectedGender=="Male")  R.drawable.boy
-                    else R.drawable.gender)
-                    ,
+                        if (selectedGender == "Female") R.drawable.girl
+                        else if (selectedGender == "Male") R.drawable.boy
+                        else R.drawable.gender
+                    ),
                     contentDescription = null,
                     tint = Color.Gray,
                     modifier = Modifier.size(24.dp)
@@ -253,7 +228,7 @@ fun TransparentGenderDropdown(
                 Box(modifier = Modifier.weight(1f)) {
                     Text(
                         text = selectedGender.ifEmpty { "Select Gender" },
-                        color =  Color.Gray ,
+                        color = Color.Gray,
                         fontSize = 16.sp
                     )
                 }
@@ -284,6 +259,40 @@ fun TransparentGenderDropdown(
                     }
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun ChangeLanguage() {
+    var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val englishText = stringResource(R.string.english)
+    val hindiText = stringResource(R.string.hindi)
+    var selectedLanguage by remember { mutableStateOf(englishText) }
+    var languageKey by remember { mutableStateOf(0) }  // Key to trigger recomposition
+
+    Box(modifier = Modifier.clickable { expanded = true }) {
+        Text(text = "Change Language")
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(
+                text = { Text(englishText) },
+                onClick = {
+                    setAppLocale(context, "en")
+                    selectedLanguage = englishText
+                    languageKey++  // Trigger recomposition
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = { Text(hindiText) },
+                onClick = {
+                    setAppLocale(context, "hi")
+                    selectedLanguage = hindiText
+                    languageKey++  // Trigger recomposition
+                    expanded = false
+                }
+            )
         }
     }
 }
