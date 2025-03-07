@@ -1,5 +1,6 @@
 package com.example.foodlens.screens
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -37,6 +38,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -53,6 +55,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.min
 
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun AnalysisPage(productName: String, navHostController: NavHostController) {
     val context = LocalContext.current
@@ -115,12 +118,12 @@ fun AnalysisPage(productName: String, navHostController: NavHostController) {
                                 contentAlignment = Alignment.Center
                             ) {
                                 val img = response.productImage
-                                    Image(
-                                        painter = rememberAsyncImagePainter(img),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(160.dp),
-                                        contentScale = ContentScale.Fit
-                                    )
+                                Image(
+                                    painter = rememberAsyncImagePainter(img),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(160.dp),
+                                    contentScale = ContentScale.Fit
+                                )
 
                                 Text(
                                     text = productName,
@@ -132,9 +135,16 @@ fun AnalysisPage(productName: String, navHostController: NavHostController) {
                                     overflow = TextOverflow.Clip, // Optional: specifies how to handle overflow, Clip is default
                                     textAlign = TextAlign.Center
                                 )
-                                MeterArc(data.overall_analysis.rating.toFloat() * 2, modifier = Modifier.scale(1.15f)) // Scale 1-5 to 1-10
+                                Text(text=data.overall_analysis.rating.toString(), fontSize = 30.sp)
+
+                                MeterArc(data.overall_analysis.rating.toFloat(), modifier = Modifier.scale(1.15f)) // Scale 1-5 to 1-10
                                 AboutColor()
                             }
+                        }
+                    }
+                    item{
+                        Row (modifier = Modifier.fillMaxWidth()){
+                            Text(text="*Disclaimer: This analysis is based on our study, for a proper explanation refer to a dietitian.", fontStyle = FontStyle.Italic, fontSize = 14.sp)
                         }
                     }
                     item {
@@ -146,21 +156,21 @@ fun AnalysisPage(productName: String, navHostController: NavHostController) {
                         if (concerns.isNotEmpty()) {
                             WhatIsItUpTo("What Concerns Us", R.drawable.shocked)
                             concerns.forEach { nutrient ->
-                                NutritionItem(nutrient.nutrient, nutrient.rating.toFloat(), nutrient.explanation)
+                                NutritionItem(nutrient.nutrient_en, nutrient.rating.toFloat(), nutrient.explanation_en)
                             }
                         }
 
                         if (neutral.isNotEmpty()) {
                             WhatIsItUpTo("Neutral", R.drawable.neutral)
                             neutral.forEach { nutrient ->
-                                NutritionItem(nutrient.nutrient, nutrient.rating.toFloat(), nutrient.explanation)
+                                NutritionItem(nutrient.nutrient_en, nutrient.rating.toFloat(), nutrient.explanation_en)
                             }
                         }
 
                         if (likes.isNotEmpty()) {
                             WhatIsItUpTo("What We Like", R.drawable.smile)
                             likes.forEach { nutrient ->
-                                NutritionItem(nutrient.nutrient, nutrient.rating.toFloat(), nutrient.explanation)
+                                NutritionItem(nutrient.nutrient_en, nutrient.rating.toFloat(), nutrient.explanation_en)
                             }
                         }
                     }
@@ -168,7 +178,7 @@ fun AnalysisPage(productName: String, navHostController: NavHostController) {
                         SuggestionsInAnalysis(data.suggested_alternatives)
                     }
                     item {
-                        Conclusion("Conclusion", data.overall_analysis.explanation)
+                        Conclusion("Conclusion", data.overall_analysis.explanation_en)
                     }
                 }
             } ?: Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -182,16 +192,19 @@ fun AnalysisPage(productName: String, navHostController: NavHostController) {
 @Composable
 fun MeterArc(value: Float, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier.fillMaxSize().padding(bottom = 20.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 20.dp),
         contentAlignment = Alignment.Center
     ) {
         val sweepAngle = (252f / 5) * value.coerceIn(0.0f, 5.0f) // 70% of 360° scaled to 5 max value
 
         val color = when {
-            value < 1.9 -> colorResource(R.color.red)
-            value in 1.9f..3.0f -> colorResource(R.color.orange)
+            value < 1.25 -> colorResource(R.color.red)
+            value in 1.25f..2.9f -> colorResource(R.color.orange)
             value in 3.0f..3.9f -> colorResource(R.color.yellow)
-            else -> colorResource(R.color.green)
+            value in  4.0..5.0 -> colorResource(R.color.green)
+            else -> colorResource(R.color.black)
         }
 
         Canvas(modifier = modifier.size(400.dp)) {
@@ -554,7 +567,7 @@ fun SuggestionsInAnalysis(suggestions: List<SuggestedAlternative>) {
                 modifier = Modifier.padding()
             ) {
                 items(suggestions) { suggestion ->
-                    SuggestedItems(suggestion.name, suggestion.reason)
+                    SuggestedItems(suggestion.name, suggestion.reason_en)
                 }
             }
         }
@@ -592,4 +605,3 @@ fun SuggestedItems(item: String, description: String) {
         }
     }
 }
-
